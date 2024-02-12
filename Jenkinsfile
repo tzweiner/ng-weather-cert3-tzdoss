@@ -1,6 +1,6 @@
 node {
     stage('Checkout') {
-        git 'https://github.com/alcfeoh/ng-weather'
+        git 'https://github.com/alcfeoh/ng-weather-cert3-tzdoss'
     }
     nodejs('v9') {
         stage('Install') {

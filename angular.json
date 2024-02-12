@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ng-weather": {
+    "ng-weather-cert3-tzdoss": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -58,18 +58,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "ng-weather:build"
+            "buildTarget": "ng-weather-cert3-tzdoss:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "ng-weather:build:production"
+              "buildTarget": "ng-weather-cert3-tzdoss:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "ng-weather:build"
+            "buildTarget": "ng-weather-cert3-tzdoss:build"
           }
         },
         "test": {
@@ -91,9 +91,15 @@
             ]
           }
         }
+      },
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "less",
+          "standalone": false
+        }
       }
     },
-    "ng-weather-e2e": {
+    "ng-weather-cert3-tzdoss-e2e": {
       "root": "",
       "sourceRoot": "",
       "projectType": "application",
@@ -102,7 +108,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "ng-weather:serve"
+            "devServerTarget": "ng-weather-cert3-tzdoss:serve"
           }
         }
       }
