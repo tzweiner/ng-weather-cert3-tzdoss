@@ -1,0 +1,10 @@
+<div class="well">
+    <form [formGroup]="intervalSelectForm">
+        <select formControlName="intervalSelect" class="form-control">
+            <option *ngFor="let interval of intervals" [ngValue]="interval">
+                {{ interval.name }}
+            </option>
+        </select>
+    </form>
+    <h5>Updates every {{ intervalSelectForm.controls.intervalSelect.value.name }}</h5>
+</div>
