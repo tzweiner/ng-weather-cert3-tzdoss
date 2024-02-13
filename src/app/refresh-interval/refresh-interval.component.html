@@ -1,10 +1,28 @@
 <div class="well">
     <form [formGroup]="intervalSelectForm">
-        <h5>Select how frequently weather data should be updated</h5>
-        <select formControlName="intervalSelect" class="form-control" (change)="intervalSelected()" id="intervalSelect">
-            <option *ngFor="let interval of intervals" [ngValue]="interval">
-                {{ interval.name }}
-            </option>
-        </select>
+        <div class="form-group">
+            <h5>Select how frequently weather data should be updated</h5>
+            <select formControlName="intervalSelect" class="form-control" (change)="intervalSelected()" id="intervalSelect">
+                <option *ngFor="let interval of intervals" [ngValue]="interval">
+                    {{ interval.name }}
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <h5>Tabs or Cards</h5>
+            <div>
+                <label>
+                    <input type="radio" value="tabs" (click)="displaySelected($event)" formControlName="displaySelect" style="margin-right: 10px;">
+                    <span>Tabs</span>
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" value="cards" (click)="displaySelected($event)" formControlName="displaySelect" style="margin-right: 10px;">
+                    <span>Cards</span>
+                </label>
+            </div>
+
+        </div>
     </form>
 </div>

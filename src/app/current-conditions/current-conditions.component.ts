@@ -12,7 +12,7 @@ import {AppSettings} from '../app-settings';
   styleUrls: ['./current-conditions.component.css']
 })
 export class CurrentConditionsComponent {
-  private weatherService = inject(WeatherService);
+  protected weatherService = inject(WeatherService);
   private router = inject(Router);
   protected locationService = inject(LocationService);
   protected currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
@@ -21,12 +21,16 @@ export class CurrentConditionsComponent {
     this.router.navigate(['/forecast', zipcode])
   }
 
-  private getCurrentInterval(): RefreshInterval {
-    const intervalInEpochMillis = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-    return AppSettings.refreshIntervals.find((interval) => interval.value === intervalInEpochMillis)
+  public getDisplayType(): string {
+    return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
   }
 
-  private getTimeoutValue(): number {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-  }
+  // private getCurrentInterval(): RefreshInterval {
+  //   const intervalInEpochMillis = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+  //   return AppSettings.refreshIntervals.find((interval) => interval.value === intervalInEpochMillis)
+  // }
+  //
+  // private getTimeoutValue(): number {
+  //   return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+  // }
 }
