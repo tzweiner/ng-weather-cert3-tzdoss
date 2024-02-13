@@ -1,0 +1,10 @@
+<div class="well">
+    <form [formGroup]="intervalSelectForm">
+        <h5>Select how frequently weather data should be updated</h5>
+        <select formControlName="intervalSelect" class="form-control" (change)="intervalSelected()" id="intervalSelect">
+            <option *ngFor="let interval of intervals" [ngValue]="interval">
+                {{ interval.name }}
+            </option>
+        </select>
+    </form>
+</div>

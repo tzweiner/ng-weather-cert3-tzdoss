@@ -1,5 +1,6 @@
 .close {
   cursor: pointer;
+  font-size: 55px;
 }
 .flex {
   display: flex;
