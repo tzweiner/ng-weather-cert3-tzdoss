@@ -1,7 +1,12 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {WeatherService} from '../weather.service';
 import {ActivatedRoute} from '@angular/router';
 import {Forecast} from './forecast.type';
+import {Observable, Subscription, timer} from 'rxjs';
+import {AppSettings} from '../app-settings';
+import {tap} from 'blue-harvest';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-forecasts-list',
@@ -11,13 +16,16 @@ import {Forecast} from './forecast.type';
 export class ForecastsListComponent {
 
   zipcode: string;
-  forecast: Forecast;
+  forecast: Observable<Forecast>;
 
-  constructor(protected weatherService: WeatherService, route : ActivatedRoute) {
-    route.params.subscribe(params => {
-      this.zipcode = params['zipcode'];
-      weatherService.getForecast(this.zipcode)
-        .subscribe(data => this.forecast = data);
-    });
+  constructor(protected weatherService: WeatherService, route: ActivatedRoute) {
+      this.zipcode = route.snapshot.paramMap.get('zipcode');
+      this.forecast = timer(0, this.getTimeoutValue()).pipe(
+          switchMap(() => weatherService.getForecast(this.zipcode))
+      );
+  }
+
+  private getTimeoutValue(): number {
+    return JSON.parse(localStorage.getItem(AppSettings.cacheTimeoutName));
   }
 }

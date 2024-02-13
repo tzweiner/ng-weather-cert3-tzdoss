@@ -15,6 +15,7 @@ import {HttpClientModule} from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import {RefreshIntervalComponent} from './refresh-interval/refresh-interval.component';
+import {CookieService} from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,7 @@ import {RefreshIntervalComponent} from './refresh-interval/refresh-interval.comp
         ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
         ReactiveFormsModule
     ],
-  providers: [LocationService, WeatherService],
+  providers: [LocationService, WeatherService, CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

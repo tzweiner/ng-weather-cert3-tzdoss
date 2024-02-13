@@ -23,6 +23,20 @@ export class WeatherService {
       .subscribe(data => this.currentConditions.update(conditions => [...conditions, {zip: zipcode, data}]));
   }
 
+  updateCurrentConditions(zipcode: string): void {
+    // Here we make a request to get the current conditions data from the API.
+    // Note the use of backticks and an expression to insert the zipcode
+    this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+        .subscribe(data => this.currentConditions.update(conditions => {
+          const exists = conditions.find((cond) => cond.zip === zipcode);
+          if (exists) {
+            exists.data = data;
+            return conditions;
+          }
+          return conditions;
+        }));
+  }
+
   removeCurrentConditions(zipcode: string) {
     this.currentConditions.update(conditions => {
       for (const i in conditions) {
