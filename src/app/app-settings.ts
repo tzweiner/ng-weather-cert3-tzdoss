@@ -24,5 +24,5 @@ export class AppSettings {
     }
   ];
   public static readonly defaultRefreshInterval = this.refreshIntervals[2].value; // 10 secs
-  public static cacheTimeoutName = 'weather_cache_timeout';
+  public static weatherRefreshIntervalName = 'weather_refresh_interval';
 }

@@ -1,11 +1,9 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component} from '@angular/core';
 import {WeatherService} from '../weather.service';
 import {ActivatedRoute} from '@angular/router';
 import {Forecast} from './forecast.type';
-import {Observable, Subscription, timer} from 'rxjs';
+import {Observable, timer} from 'rxjs';
 import {AppSettings} from '../app-settings';
-import {tap} from 'blue-harvest';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {switchMap} from 'rxjs/operators';
 
 @Component({
@@ -26,6 +24,6 @@ export class ForecastsListComponent {
   }
 
   private getTimeoutValue(): number {
-    return JSON.parse(localStorage.getItem(AppSettings.cacheTimeoutName));
+    return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
   }
 }

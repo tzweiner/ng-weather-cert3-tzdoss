@@ -48,6 +48,6 @@ export class LocationService {
   }
 
   private getTimeoutValue(): number {
-    return JSON.parse(localStorage.getItem(AppSettings.cacheTimeoutName));
+    return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
   }
 }

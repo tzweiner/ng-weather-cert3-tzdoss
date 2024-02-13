@@ -1,10 +1,7 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component} from '@angular/core';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
 import {FormControl, FormGroup} from '@angular/forms';
-import * as moment from 'moment';
-import {WeatherService} from '../weather.service';
-import {CookieService} from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-refresh-interval',
@@ -14,9 +11,15 @@ import {CookieService} from 'ngx-cookie-service';
 export class RefreshIntervalComponent {
   public intervals: RefreshInterval[] = AppSettings.refreshIntervals;
   public intervalSelectForm = new FormGroup({
-    intervalSelect: new FormControl(this.intervals.find((i) => i.value === AppSettings.defaultRefreshInterval)),
+    intervalSelect: new FormControl(this.intervals.find((i) => {
+      let searchForValue = AppSettings.defaultRefreshInterval;
+      const storedValue = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+      if (storedValue) {
+        searchForValue = storedValue
+      }
+      return i.value === searchForValue;
+    })),
   });
-  public cacheExpires = signal<number>(this.calculateCacheExpiration());
 
   constructor() {
     this.setInterval();
@@ -24,18 +27,13 @@ export class RefreshIntervalComponent {
 
   private setInterval(): void {
     localStorage.setItem(
-        AppSettings.cacheTimeoutName,
+        AppSettings.weatherRefreshIntervalName,
         JSON.stringify(this.intervalSelectForm.controls.intervalSelect.value.value
       )
     );
   }
 
-  private calculateCacheExpiration(): number {
-    return moment().add(this.intervalSelectForm.controls.intervalSelect.value.value, 'milliseconds').valueOf()
-  }
   public intervalSelected(): void {
-    console.log('interval selected ', JSON.stringify(this.intervalSelectForm.controls.intervalSelect.value.name));
     this.setInterval();
-    this.cacheExpires = signal<number>(this.calculateCacheExpiration());
   }
 }

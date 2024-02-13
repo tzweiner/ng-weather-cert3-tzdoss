@@ -5,6 +5,8 @@ import {HttpClient} from '@angular/common/http';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
 import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
+import {AppSettings} from './app-settings';
+import {RefreshInterval} from './refresh-interval.model';
 
 @Injectable()
 export class WeatherService {
@@ -20,7 +22,11 @@ export class WeatherService {
     // Here we make a request to get the current conditions data from the API.
     // Note the use of backticks and an expression to insert the zipcode
     this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-      .subscribe(data => this.currentConditions.update(conditions => [...conditions, {zip: zipcode, data}]));
+      .subscribe(data =>
+          this.currentConditions.update(conditions =>
+              [...conditions, {zip: zipcode, data, active: false, refreshInterval: this.getRefreshInterval() }]
+          )
+      );
   }
 
   updateCurrentConditions(zipcode: string): void {
@@ -74,6 +80,11 @@ export class WeatherService {
     } else {
         return WeatherService.ICON_URL + 'art_clear.png';
     }
+  }
+
+  private getRefreshInterval(): RefreshInterval {
+      const storedInterval = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+      return AppSettings.refreshIntervals.find((i) => i.value === storedInterval)
   }
 
 }

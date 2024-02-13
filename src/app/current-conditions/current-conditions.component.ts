@@ -1,12 +1,10 @@
-import {AfterViewInit, Component, inject, Input, OnInit, Signal} from '@angular/core';
+import {Component, inject, Signal} from '@angular/core';
 import {WeatherService} from '../weather.service';
 import {LocationService} from '../location.service';
 import {Router} from '@angular/router';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
-import {Observable, timer} from 'rxjs';
-import {switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-current-conditions',
@@ -24,11 +22,11 @@ export class CurrentConditionsComponent {
   }
 
   private getCurrentInterval(): RefreshInterval {
-    const intervalInEpochMillis = JSON.parse(localStorage.getItem(AppSettings.cacheTimeoutName));
+    const intervalInEpochMillis = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
     return AppSettings.refreshIntervals.find((interval) => interval.value === intervalInEpochMillis)
   }
 
   private getTimeoutValue(): number {
-    return JSON.parse(localStorage.getItem(AppSettings.cacheTimeoutName));
+    return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
   }
 }
