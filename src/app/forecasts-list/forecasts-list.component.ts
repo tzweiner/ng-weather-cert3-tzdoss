@@ -18,12 +18,12 @@ export class ForecastsListComponent {
 
   constructor(protected weatherService: WeatherService, route: ActivatedRoute) {
       this.zipcode = route.snapshot.paramMap.get('zipcode');
-      this.forecast = timer(0, this.getTimeoutValue()).pipe(
+      this.forecast = timer(0, this.getRefreshIntervalValue()).pipe(
           switchMap(() => weatherService.getForecast(this.zipcode))
       );
   }
 
-  private getTimeoutValue(): number {
+  private getRefreshIntervalValue(): number {
     return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
   }
 }

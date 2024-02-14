@@ -15,6 +15,9 @@ import {HttpClientModule} from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import {RefreshIntervalComponent} from './refresh-interval/refresh-interval.component';
+import {TabsComponent} from './tabs/tabs.component';
+import {TabComponent} from './tab/tab.component';
+import {TabPanelComponent} from './tab-panel/tab-panel.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +27,9 @@ import {RefreshIntervalComponent} from './refresh-interval/refresh-interval.comp
     CurrentConditionsComponent,
     MainPageComponent,
     RefreshIntervalComponent,
+      TabsComponent,
+      TabComponent,
+      TabPanelComponent,
   ],
     imports: [
         BrowserModule,

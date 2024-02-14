@@ -1,5 +1,5 @@
 {
-  "compileOnSave": false,
+  "compileOnSave": true,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
     "baseUrl": "src",
@@ -16,6 +16,7 @@
       "dom"
     ],
     "useDefineForClassFields": false,
+    "strictPropertyInitialization": false,
     "paths": {
       "path": [
         "./node_modules/path-browserify"

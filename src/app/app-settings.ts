@@ -24,5 +24,7 @@ export class AppSettings {
     }
   ];
   public static readonly defaultRefreshInterval = this.refreshIntervals[2].value; // 10 secs
-  public static weatherRefreshIntervalName = 'weather_refresh_interval';
+  public static readonly weatherRefreshIntervalName = 'weather_refresh_interval';
+  public static readonly weatherDisplayTypeName = 'weather_display_type';
+  public static readonly defaultDisplayType = 'cards';
 }

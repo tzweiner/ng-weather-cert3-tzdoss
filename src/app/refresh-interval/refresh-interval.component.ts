@@ -19,10 +19,12 @@ export class RefreshIntervalComponent {
       }
       return i.value === searchForValue;
     })),
+    displaySelect: new FormControl(JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName)))
   });
 
   constructor() {
     this.setInterval();
+    this.setDisplay();
   }
 
   private setInterval(): void {
@@ -33,7 +35,23 @@ export class RefreshIntervalComponent {
     );
   }
 
+  private setDisplay(selection?: string): void {
+    let setTo = JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName));
+    if (!!selection) {
+      setTo = selection;
+    }
+    localStorage.setItem(
+        AppSettings.weatherDisplayTypeName,
+        JSON.stringify(setTo)
+    );
+  }
+
   public intervalSelected(): void {
     this.setInterval();
+  }
+
+  public displaySelected(event): void {
+    const target = event.target;
+    this.setDisplay(target.value);
   }
 }

@@ -1,7 +1,7 @@
 import { NgWeatherPage } from './app.po';
 import {browser, By, element} from 'protractor';
 
-describe('ng-weather App', () => {
+describe('ng-weather-cert3-tzdoss App', () => {
   let page: NgWeatherPage = new NgWeatherPage();
 
       beforeEach(async() => {
