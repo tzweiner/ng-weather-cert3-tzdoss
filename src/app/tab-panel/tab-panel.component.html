@@ -1,0 +1,8 @@
+<ng-container *ngFor="let item of items">
+    <ng-container
+        *ngIf="tabPanelsTemplateRef"
+        [ngTemplateOutlet]="tabPanelsTemplateRef"
+        [ngTemplateOutletContext]="{$implicit:item}"
+    >
+    </ng-container>
+</ng-container>

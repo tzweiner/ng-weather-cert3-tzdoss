@@ -30,6 +30,10 @@ export class LocationService {
     if (!zipcode) {   // empty string
       return;
     }
+    const index = this.locations.indexOf(zipcode);
+    if (index !== -1) {   // already exists
+      return;
+    }
     this.locations.push(zipcode);
     localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
     this.weatherService.addCurrentConditions(zipcode);

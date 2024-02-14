@@ -24,13 +24,4 @@ export class CurrentConditionsComponent {
   public getDisplayType(): string {
     return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
   }
-
-  // private getCurrentInterval(): RefreshInterval {
-  //   const intervalInEpochMillis = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-  //   return AppSettings.refreshIntervals.find((interval) => interval.value === intervalInEpochMillis)
-  // }
-  //
-  // private getTimeoutValue(): number {
-  //   return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-  // }
 }

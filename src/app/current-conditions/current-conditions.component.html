@@ -1,5 +1,5 @@
 <div>
-    <div *ngIf="getDisplayType() == 'cards'; else tabs">
+    <div *ngIf="getDisplayType() == 'cards'; else tabsDisplay">
         <div *ngFor="let location of currentConditionsByZip()" class="well flex" (click)="showForecast(location.zip)">
             <div>
                 <h3>{{location.data.name}} ({{location.zip}})</h3>
@@ -21,8 +21,7 @@
             </div>
         </div>
     </div>
-    <ng-template #tabs>
-        hello
-        <app-tabs [data]="currentConditionsByZip()"></app-tabs>
+    <ng-template #tabsDisplay>
+        <app-tabs [items]="currentConditionsByZip()"></app-tabs>
     </ng-template>
 </div>
