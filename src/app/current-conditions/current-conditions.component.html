@@ -13,7 +13,7 @@
                 <p>
                     <a [routerLink]="['/forecast', location.zip]" >Show 5-day forecast for {{location.data.name}}</a>
                 </p>
-                <p>This weather card is updated every {{ location.refreshInterval.name }}</p>
+                <p>This weather card and its 5-day forecast are updated every <span class="highlight-container"><span class="highlight">{{ getZipcodeRefreshInterval(location.zip)?.name }}</span></span></p>
             </div>
             <div>
                 <span class="close" (click)="locationService.removeLocation(location.zip)">&times;</span>

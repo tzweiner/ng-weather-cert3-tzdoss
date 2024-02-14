@@ -19,7 +19,7 @@ export class RefreshIntervalComponent {
       }
       return i.value === searchForValue;
     })),
-    displaySelect: new FormControl(JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName)))
+    displaySelect: new FormControl(JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName)) || AppSettings.defaultDisplayType)
   });
 
   constructor() {
@@ -39,6 +39,9 @@ export class RefreshIntervalComponent {
     let setTo = JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName));
     if (!!selection) {
       setTo = selection;
+    }
+    if (!setTo) {
+      setTo = AppSettings.defaultDisplayType;
     }
     localStorage.setItem(
         AppSettings.weatherDisplayTypeName,

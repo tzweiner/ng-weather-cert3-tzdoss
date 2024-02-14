@@ -2,6 +2,8 @@ import {AfterContentInit, Component, inject, Input, OnChanges, OnInit} from '@an
 import {LocationService} from '../location.service';
 import {TabsOptions} from './tabs-options.model';
 import {WeatherService} from '../weather.service';
+import {RefreshInterval} from '../refresh-interval.model';
+import {AppSettings} from '../app-settings';
 
 @Component({
   selector: 'app-tabs',
@@ -57,6 +59,15 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
 
   ngOnChanges(): void {
     this.initActiveState();
+  }
+
+  public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
+    let cachedValue: RefreshInterval = JSON.parse(localStorage.getItem(`_${zipcode}_refreshInterval`));
+    if (!cachedValue) {
+      const intervalPerConfigSelected = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+      cachedValue = AppSettings.refreshIntervals.find((item) => item.value === intervalPerConfigSelected)
+    }
+    return cachedValue;
   }
 
 }

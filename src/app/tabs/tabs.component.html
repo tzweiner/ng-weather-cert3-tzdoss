@@ -22,7 +22,7 @@
                     <p>
                         <a [routerLink]="['/forecast', tabPanel.zip]" >Show 5-day forecast for {{tabPanel.data.name}}</a>
                     </p>
-                    <p>This weather card is updated every <span class="highlight-container"><span class="highlight">{{ tabPanel.refreshInterval.name }}</span></span></p>
+                    <p>This weather card and its 5-day forecast are updated every <span class="highlight-container"><span class="highlight">{{ getZipcodeRefreshInterval(tabPanel.zip).name }}</span></span></p>
                 </div>
                 <div>
                     <img [src]="weatherService.getWeatherIcon(tabPanel.data.weather[0].id)" alt="weather image">

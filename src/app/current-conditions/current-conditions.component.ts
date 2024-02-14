@@ -5,6 +5,8 @@ import {Router} from '@angular/router';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
+import {AppComponent} from '../app.component';
+import {interval} from 'rxjs';
 
 @Component({
   selector: 'app-current-conditions',
@@ -23,5 +25,14 @@ export class CurrentConditionsComponent {
 
   public getDisplayType(): string {
     return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
+  }
+
+  public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
+    let cachedValue: RefreshInterval = JSON.parse(localStorage.getItem(`_${zipcode}_refreshInterval`));
+    if (!cachedValue) {
+      const intervalPerConfigSelected = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+      cachedValue = AppSettings.refreshIntervals.find((item) => item.value === intervalPerConfigSelected)
+    }
+    return cachedValue;
   }
 }

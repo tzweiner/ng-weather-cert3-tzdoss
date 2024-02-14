@@ -5,5 +5,4 @@ export interface ConditionsAndZip {
     zip: string;
     data: CurrentConditions;
     active?: boolean;
-    refreshInterval?: RefreshInterval;
 }
