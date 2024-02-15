@@ -18,6 +18,10 @@ import {RefreshIntervalComponent} from './refresh-interval/refresh-interval.comp
 import {TabsComponent} from './tabs/tabs.component';
 import {TabComponent} from './tab/tab.component';
 import {TabPanelComponent} from './tab-panel/tab-panel.component';
+import {StoreModule} from '@ngrx/store';
+import {currentConditionsAndZipReducer} from './store/reducers/current-conditions-and-zip.reducers ';
+import {EffectsModule} from '@ngrx/effects';
+import {CurrentConditionsAndZipEffects} from './store/effects/current-conditions-and-zip..effects';
 
 @NgModule({
   declarations: [
@@ -38,7 +42,9 @@ import {TabPanelComponent} from './tab-panel/tab-panel.component';
         RouterModule,
         routing,
         ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        StoreModule.forRoot({addCurrentConditionsAndZip: currentConditionsAndZipReducer}),
+        EffectsModule.forRoot([CurrentConditionsAndZipEffects])
     ],
   providers: [LocationService, WeatherService],
   bootstrap: [AppComponent]

@@ -1,4 +1,4 @@
-import {Injectable, Signal, signal} from '@angular/core';
+import {computed, Injectable, Signal, signal} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {HttpClient} from '@angular/common/http';
@@ -7,6 +7,8 @@ import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
 import {AppSettings} from './app-settings';
 import {RefreshInterval} from './refresh-interval.model';
+import {tap, map} from 'rxjs/operators';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Injectable()
 export class WeatherService {
@@ -15,47 +17,95 @@ export class WeatherService {
   static APPID = '5a4b2d457ecbef9eb2a71e480b947604';
   static ICON_URL = 'https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-hdpi/';
   private currentConditions = signal<ConditionsAndZip[]>([]);
+  public currentConditions$: Observable<ConditionsAndZip[]> = toObservable(this.currentConditions);
 
   constructor(private http: HttpClient) { }
 
-  addCurrentConditions(zipcode: string): void {
-    // Here we make a request to get the current conditions data from the API.
-    // Note the use of backticks and an expression to insert the zipcode
-    this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-      .subscribe(data => {
-          this.currentConditions.update(conditions =>
-              [...conditions, {zip: zipcode, data, active: false }]
-          );
-          localStorage.setItem(`_${zipcode}_refreshInterval`, JSON.stringify(this.getRefreshInterval()));
-      });
-  }
+  // addCurrentConditions(zipcode: string): void {
+  //   // Here we make a request to get the current conditions data from the API.
+  //   // Note the use of backticks and an expression to insert the zipcode
+  //   this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+  //     .subscribe(data => {
+  //         this.currentConditions.update(conditions =>
+  //             [...conditions, {zip: zipcode, data, active: false }]
+  //         );
+  //         localStorage.setItem(`_${zipcode}_refreshInterval`, JSON.stringify(this.getRefreshInterval()));
+  //     });
+  // }
+  //
+  // updateCurrentConditions(zipcode: string): void {
+  //   // Here we make a request to get the current conditions data from the API.
+  //   // Note the use of backticks and an expression to insert the zipcode
+  //   this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+  //       .subscribe(data => this.currentConditions.update(conditions => {
+  //         const exists = conditions.find((cond) => cond.zip === zipcode);
+  //         if (exists) {
+  //           exists.data = data;
+  //           return conditions;
+  //         }
+  //         return conditions;
+  //       }));
+  // }
+  //
+  //   removeCurrentConditions(zipcode: string) {
+  //       this.currentConditions.update(conditions => {
+  //           for (const i in conditions) {
+  //               if (conditions[i].zip === zipcode) {
+  //                   conditions.splice(+i, 1);
+  //                   localStorage.removeItem(`_${zipcode}_refreshInterval`);
+  //                   break;
+  //               }
+  //           }
+  //           return conditions;
+  //       })
+  //   }
 
-  updateCurrentConditions(zipcode: string): void {
-    // Here we make a request to get the current conditions data from the API.
-    // Note the use of backticks and an expression to insert the zipcode
-    this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-        .subscribe(data => this.currentConditions.update(conditions => {
-          const exists = conditions.find((cond) => cond.zip === zipcode);
-          if (exists) {
-            exists.data = data;
+    addCurrentConditions(zipcode: string): Observable<ConditionsAndZip> {
+        // Here we make a request to get the current conditions data from the API.
+        // Note the use of backticks and an expression to insert the zipcode
+        return this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+            .pipe(
+                tap((data) => {
+                    console.log('in here');
+                    this.currentConditions.update(conditions =>
+                        [...conditions, {zip: zipcode, data, active: false }]
+                    );
+                    localStorage.setItem(`_${zipcode}_refreshInterval`, JSON.stringify(this.getRefreshInterval()));
+                }),
+                map((data: CurrentConditions) => ({zip: zipcode, data, active: false } as ConditionsAndZip) )
+            );
+    }
+
+    updateCurrentConditions(zipcode: string):  Observable<ConditionsAndZip> {
+        // Here we make a request to get the current conditions data from the API.
+        // Note the use of backticks and an expression to insert the zipcode
+        return this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+            .pipe(
+                tap((data) => this.currentConditions.update(conditions => {
+                    const exists = conditions.find((cond) => cond.zip === zipcode);
+                    if (exists) {
+                        exists.data = data;
+                        return conditions;
+                    }
+                    return conditions;
+                })),
+                map((data) => ({zip: zipcode, data } as ConditionsAndZip) )
+            );
+    }
+
+    removeCurrentConditions(zipcode: string): Observable<ConditionsAndZip[]> {
+        this.currentConditions.update(conditions => {
+            for (const i in conditions) {
+                if (conditions[i].zip === zipcode) {
+                    conditions.splice(+i, 1);
+                    localStorage.removeItem(`_${zipcode}_refreshInterval`);
+                    break;
+                }
+            }
             return conditions;
-          }
-          return conditions;
-        }));
-  }
-
-  removeCurrentConditions(zipcode: string) {
-    this.currentConditions.update(conditions => {
-      for (const i in conditions) {
-        if (conditions[i].zip === zipcode) {
-          conditions.splice(+i, 1);
-          localStorage.removeItem(`_${zipcode}_refreshInterval`);
-          break;
-        }
-      }
-      return conditions;
-    })
-  }
+        });
+        return this.currentConditions$;
+    }
 
   getCurrentConditions(): Signal<ConditionsAndZip[]> {
     return this.currentConditions.asReadonly();
