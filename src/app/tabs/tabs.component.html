@@ -8,7 +8,7 @@
 </app-tab>
 <app-tab-panel [items]="items">
     <ng-template let-tabPanel #tabPanels>
-        <div class="tabsPanel" [ngClass]="{ 'show': tabPanel.active }">
+        <div class="tabsPanel" [ngClass]="{ 'show': tabPanel.active }" (click)="showForecast(tabPanel.zip)">
             <div class="flex well">
                 <div>
                     <h3>{{tabPanel.data.name}} ({{tabPanel.zip}})</h3>

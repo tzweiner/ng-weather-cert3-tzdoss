@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {LocationService} from '../location.service';
 
 @Component({
@@ -11,4 +11,5 @@ export class ZipcodeEntryComponent {
   addLocation(zipcode: string) {
     this.service.addLocation(zipcode);
   }
+
 }

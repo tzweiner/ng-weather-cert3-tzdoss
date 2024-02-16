@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import {WeatherService} from './weather.service';
 import {AppSettings} from './app-settings';
 import {timer} from 'rxjs';
 import {Store} from '@ngrx/store';
@@ -12,7 +11,7 @@ export class LocationService {
 
   locations: string[] = [];
 
-  constructor(private weatherService: WeatherService, private store: Store) {
+  constructor(private store: Store) {
     const locString = localStorage.getItem(LOCATIONS);
     if (locString) {
       this.locations = JSON.parse(locString);

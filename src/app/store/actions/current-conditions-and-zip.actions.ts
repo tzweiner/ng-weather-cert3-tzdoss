@@ -10,6 +10,10 @@ export class CurrentConditionsAndZipActions {
         createAction('[Weather] Current conditions and zip added',
             props<{ zipcode: string }>()
         );
+    public static readonly addZipFailed =
+        createAction('[Weather] Current conditions and zip added',
+            props<{ error: Error, zipcode: string }>()
+        );
 
     // Remove
     public static readonly removeZip = createAction('[Weather] Remove zip', props<{ zipcode: string }>());
@@ -21,5 +25,9 @@ export class CurrentConditionsAndZipActions {
     public static readonly zipUpdated =
         createAction('[Weather] Current conditions and zip updated',
             props<{ currentConditions: ConditionsAndZip }>()
+        );
+    public static readonly updateZipFailed =
+        createAction('[Weather] Current conditions and zip added',
+            props<{ error: Error }>()
         );
 }

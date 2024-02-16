@@ -4,6 +4,7 @@ import {TabsOptions} from './tabs-options.model';
 import {WeatherService} from '../weather.service';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-tabs',
@@ -13,6 +14,7 @@ import {AppSettings} from '../app-settings';
 export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   protected locationService = inject(LocationService);
   protected weatherService = inject(WeatherService);
+  private router = inject(Router);
 
   private _items: Type[];
   @Input() set items(data: Type[]) {
@@ -29,7 +31,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   }
 
   removeTab(item: Type): void {
-    console.log('in removeTab in tabs');
     this.locationService.removeLocation(item.zip);
     this.initActiveState();
   }
@@ -69,6 +70,10 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
       cachedValue = AppSettings.refreshIntervals.find((item) => item.value === intervalPerConfigSelected)
     }
     return cachedValue;
+  }
+
+  showForecast(zipcode: string) {
+    this.router.navigate(['/forecast', zipcode])
   }
 
 }

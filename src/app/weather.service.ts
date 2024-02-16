@@ -1,5 +1,5 @@
 import {Injectable, Signal, signal} from '@angular/core';
-import {Observable, Subscription} from 'rxjs';
+import {EMPTY, Observable, Subscription} from 'rxjs';
 
 import {HttpClient} from '@angular/common/http';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
@@ -9,6 +9,8 @@ import {AppSettings} from './app-settings';
 import {RefreshInterval} from './refresh-interval.model';
 import {Actions, ofType} from '@ngrx/effects';
 import {CurrentConditionsAndZipActions} from './store/actions/current-conditions-and-zip.actions';
+import {Store} from '@ngrx/store';
+import {catchError} from 'rxjs/operators';
 
 @Injectable()
 export class WeatherService {
@@ -19,7 +21,7 @@ export class WeatherService {
   private currentConditions = signal<ConditionsAndZip[]>([]);
 
   private readonly subscriptions = new Subscription();
-  constructor(private http: HttpClient, private actions: Actions) {
+  constructor(private http: HttpClient, private actions: Actions, private store: Store) {
       this.subscriptions.add(
           this.actions.pipe(
               ofType(CurrentConditionsAndZipActions.addZip)
@@ -44,11 +46,18 @@ export class WeatherService {
     // Here we make a request to get the current conditions data from the API.
     // Note the use of backticks and an expression to insert the zipcode
     this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+        .pipe(
+            catchError((error) => EMPTY)
+        )
       .subscribe(data => {
           this.currentConditions.update(conditions =>
               [...conditions, {zip: zipcode, data, active: false }]
           );
           localStorage.setItem(`_${zipcode}_refreshInterval`, JSON.stringify(this.getRefreshInterval()));
+          this.store.dispatch(CurrentConditionsAndZipActions.zipAdded({zipcode}))
+      },
+  error => {
+          this.store.dispatch(CurrentConditionsAndZipActions.addZipFailed({error, zipcode}))
       });
   }
 
@@ -61,7 +70,10 @@ export class WeatherService {
             return conditions;
           }
           return conditions;
-        }));
+        }),
+        error => {
+            this.store.dispatch(CurrentConditionsAndZipActions.updateZipFailed({error}))
+        });
   }
 
     removeCurrentConditions(zipcode: string) {
