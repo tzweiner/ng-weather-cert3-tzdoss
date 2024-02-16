@@ -21,46 +21,46 @@ export class WeatherService {
   private currentConditions = signal<ConditionsAndZip[]>([]);
 
   private readonly subscriptions = new Subscription();
-  constructor(private http: HttpClient, private actions: Actions, private store: Store) {
-      this.subscriptions.add(
-          this.actions.pipe(
-              ofType(CurrentConditionsAndZipActions.addZip)
-          ).subscribe(({zipcode}) => this.addCurrentConditions(zipcode))
-      );
-
-      this.subscriptions.add(
-          this.actions.pipe(
-              ofType(CurrentConditionsAndZipActions.updateZip)
-          ).subscribe(({zipcode}) => this.updateCurrentConditions(zipcode))
-      );
-
-      this.subscriptions.add(
-          this.actions.pipe(
-              ofType(CurrentConditionsAndZipActions.removeZip)
-          ).subscribe(({zipcode}) => this.removeCurrentConditions(zipcode))
-      );
+  constructor(private http: HttpClient) {
   }
 
+    addCurrentConditions(zipcode: string): void {
+        // Here we make a request to get the current conditions data from the API. Note the use of backticks and an expression to insert the zipcode
+        this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+            .subscribe(data => this.currentConditions.update(conditions => [...conditions, {zip: zipcode, data}]));
+    }
 
-  addCurrentConditions(zipcode: string): void {
-    // Here we make a request to get the current conditions data from the API.
-    // Note the use of backticks and an expression to insert the zipcode
-    this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-        .pipe(
-            catchError((error) => EMPTY)
-        )
-      .subscribe(data => {
-          this.currentConditions.update(conditions =>
-              [...conditions, {zip: zipcode, data, active: false }]
-          );
-          localStorage.setItem(`_${zipcode}_refreshInterval`, JSON.stringify(this.getRefreshInterval()));
-          this.store.dispatch(CurrentConditionsAndZipActions.zipAdded({zipcode}))
-      },
-  error => {
-          this.store.dispatch(CurrentConditionsAndZipActions.addZipFailed({error, zipcode}))
-      });
-  }
+    removeCurrentConditions(zipcode: string) {
+        this.currentConditions.update(conditions => {
+            for (const i in conditions) {
+                if (conditions[i].zip === zipcode) {
+                    conditions.splice(+i, 1);
+                }
+            }
+            return conditions;
+        })
+    }
 
+
+  // addCurrentConditions(zipcode: string): void {
+  //   // Here we make a request to get the current conditions data from the API.
+  //   // Note the use of backticks and an expression to insert the zipcode
+  //   this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+  //       .pipe(
+  //           catchError((error) => EMPTY)
+  //       )
+  //     .subscribe(data => {
+  //         this.currentConditions.update(conditions =>
+  //             [...conditions, {zip: zipcode, data, active: false }]
+  //         );
+  //         localStorage.setItem(`_${zipcode}_refreshInterval`, JSON.stringify(this.getRefreshInterval()));
+  //         this.store.dispatch(CurrentConditionsAndZipActions.zipAdded({zipcode}))
+  //     },
+  // error => {
+  //         this.store.dispatch(CurrentConditionsAndZipActions.addZipFailed({error, zipcode}))
+  //     });
+  // }
+  //
   updateCurrentConditions(zipcode: string): void {
     this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
         .subscribe(data => this.currentConditions.update(conditions => {
@@ -72,22 +72,22 @@ export class WeatherService {
           return conditions;
         }),
         error => {
-            this.store.dispatch(CurrentConditionsAndZipActions.updateZipFailed({error}))
+            // this.store.dispatch(CurrentConditionsAndZipActions.updateZipFailed({error}))
         });
   }
-
-    removeCurrentConditions(zipcode: string) {
-        this.currentConditions.update(conditions => {
-            for (const i in conditions) {
-                if (conditions[i].zip === zipcode) {
-                    conditions.splice(+i, 1);
-                    localStorage.removeItem(`_${zipcode}_refreshInterval`);
-                    break;
-                }
-            }
-            return conditions;
-        })
-    }
+  //
+  //   removeCurrentConditions(zipcode: string) {
+  //       this.currentConditions.update(conditions => {
+  //           for (const i in conditions) {
+  //               if (conditions[i].zip === zipcode) {
+  //                   conditions.splice(+i, 1);
+  //                   localStorage.removeItem(`_${zipcode}_refreshInterval`);
+  //                   break;
+  //               }
+  //           }
+  //           return conditions;
+  //       })
+  //   }
 
   getCurrentConditions(): Signal<ConditionsAndZip[]> {
     return this.currentConditions.asReadonly();
