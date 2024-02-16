@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import {AppSettings} from './app-settings';
-import {timer} from 'rxjs';
-import {Store} from '@ngrx/store';
-import {CurrentConditionsAndZipActions} from './store/actions/current-conditions-and-zip.actions';
+import {BehaviorSubject, Observable, Subject, timer} from 'rxjs';
 import {WeatherService} from './weather.service';
+import {takeUntil} from 'rxjs/operators';
 
 export const LOCATIONS = 'locations';
 
@@ -11,6 +10,7 @@ export const LOCATIONS = 'locations';
 export class LocationService {
 
   locations: string[] = [];
+  private removedSubject$: Subject<boolean> = new Subject<boolean>();
 
   // constructor(private store: Store) {
   //   const locString = localStorage.getItem(LOCATIONS);
@@ -59,24 +59,24 @@ export class LocationService {
       this.locations = JSON.parse(locString);
     }
     for (const zipcode of this.locations) {
-      this.weatherService.addCurrentConditions(zipcode);
+      // this.weatherService.addCurrentConditions(zipcode);
       localStorage.setItem(`_${zipcode}_refreshInterval`,
           JSON.stringify(AppSettings.refreshIntervals.find((item) => item.value === this.getRefreshInterval())) );
-      timer(this.getRefreshInterval(), this.getRefreshInterval()).subscribe(() => {
-        this.weatherService.updateCurrentConditions(zipcode);
-      });
+      this.weatherService.addCurrentConditions(zipcode)
+      timer(this.getRefreshInterval(), this.getRefreshInterval())
+          .pipe(takeUntil(this.removedSubject$))
+          .subscribe(() => this.weatherService.addCurrentConditions(zipcode));
     }
   }
 
   addLocation(zipcode: string) {
     this.locations.push(zipcode);
     localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
-    this.weatherService.addCurrentConditions(zipcode);
     localStorage.setItem(`_${zipcode}_refreshInterval`,
         JSON.stringify(AppSettings.refreshIntervals.find((item) => item.value === this.getRefreshInterval())) );
-    timer(this.getRefreshInterval(), this.getRefreshInterval()).subscribe(() => {
-      this.weatherService.updateCurrentConditions(zipcode);
-    });
+    timer(0, this.getRefreshInterval())
+        .pipe(takeUntil(this.removedSubject$))
+        .subscribe(() => this.weatherService.addCurrentConditions(zipcode));
   }
 
   removeLocation(zipcode: string) {
@@ -86,6 +86,8 @@ export class LocationService {
       localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
       localStorage.removeItem(`_${zipcode}_refreshInterval`);
       this.weatherService.removeCurrentConditions(zipcode);
+      this.removedSubject$.next(true);
+      this.removedSubject$.complete();
     }
   }
 
