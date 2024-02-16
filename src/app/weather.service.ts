@@ -1,5 +1,5 @@
 import {Injectable, Signal, signal} from '@angular/core';
-import {EMPTY, Observable, Subscription} from 'rxjs';
+import {EMPTY, Observable, Subscription, timer} from 'rxjs';
 
 import {HttpClient} from '@angular/common/http';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
@@ -7,10 +7,7 @@ import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
 import {AppSettings} from './app-settings';
 import {RefreshInterval} from './refresh-interval.model';
-import {Actions, ofType} from '@ngrx/effects';
-import {CurrentConditionsAndZipActions} from './store/actions/current-conditions-and-zip.actions';
-import {Store} from '@ngrx/store';
-import {catchError} from 'rxjs/operators';
+import {skipUntil, switchMap, take} from 'rxjs/operators';
 
 @Injectable()
 export class WeatherService {
@@ -57,8 +54,10 @@ export class WeatherService {
 
   getForecast(zipcode: string): Observable<Forecast> {
     // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
-    return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
-
+    // return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
+      return timer(0, this.getRefreshInterval().value).pipe(
+          switchMap(() => this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`))
+      );
   }
 
   getWeatherIcon(id): string {
