@@ -9,7 +9,7 @@ import {AppSettings} from '../app-settings';
 @Component({
   selector: 'app-current-conditions',
   templateUrl: './current-conditions.component.html',
-  styleUrls: ['./current-conditions.component.css']
+  styleUrls: ['./current-conditions.component.css'],
 })
 export class CurrentConditionsComponent {
   protected weatherService = inject(WeatherService);

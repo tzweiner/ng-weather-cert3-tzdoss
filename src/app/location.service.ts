@@ -6,11 +6,6 @@ import {Store} from '@ngrx/store';
 import {CurrentConditionsAndZipActions} from './store/actions/current-conditions-and-zip.actions';
 
 export const LOCATIONS = 'locations';
-export interface LocationAction {
-  item: string;
-  action: 'ADD' | 'REMOVE' | 'UPDATE';
-  result: string[];
-}
 
 @Injectable()
 export class LocationService {

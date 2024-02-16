@@ -15,6 +15,14 @@ export class AppSettings {
       name: '10 seconds',
     },
     {
+      value: 20000,
+      name: '20 seconds',
+    },
+    {
+      value: 60000,
+      name: '1 minute',
+    },
+    {
       value: 3600000,
       name: '1 hour',
     },

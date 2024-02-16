@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, inject, Input, OnChanges, OnInit} from '@angular/core';
+import {Component, inject, Input, OnChanges} from '@angular/core';
 import {LocationService} from '../location.service';
 import {TabsOptions} from './tabs-options.model';
 import {WeatherService} from '../weather.service';
@@ -8,7 +8,7 @@ import {AppSettings} from '../app-settings';
 @Component({
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
-  styleUrl: './tabs.component.css'
+  styleUrl: './tabs.component.css',
 })
 export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   protected locationService = inject(LocationService);
