@@ -29,6 +29,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   }
 
   removeTab(item: Type): void {
+    console.log('in removeTab in tabs');
     this.locationService.removeLocation(item.zip);
     this.initActiveState();
   }

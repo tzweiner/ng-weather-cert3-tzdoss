@@ -6,7 +6,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 @Component({
   selector: 'app-refresh-interval',
   templateUrl: './refresh-interval.component.html',
-  styleUrl: './refresh-interval.component.scss'
+  styleUrl: './refresh-interval.component.css'
 })
 export class RefreshIntervalComponent {
   public intervals: RefreshInterval[] = AppSettings.refreshIntervals;

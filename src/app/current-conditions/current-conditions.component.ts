@@ -5,8 +5,6 @@ import {Router} from '@angular/router';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
-import {AppComponent} from '../app.component';
-import {interval} from 'rxjs';
 
 @Component({
   selector: 'app-current-conditions',
