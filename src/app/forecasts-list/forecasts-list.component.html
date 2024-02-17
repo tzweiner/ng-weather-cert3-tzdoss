@@ -1,11 +1,11 @@
-<div *ngIf="forecast() as data">
+<div *ngFor="let condition of currentConditionsByZipObs | async">
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">5-day forecast for {{data?.city.name}}</h3>
+      <h3 class="panel-title">5-day forecast for {{condition.forecast?.city.name}}</h3>
 
     </div>
     <ul class="list-group">
-      <li *ngFor="let dailyForecast of data?.list" class="list-group-item">
+      <li *ngFor="let dailyForecast of condition.forecast?.list" class="list-group-item">
         {{ (dailyForecast.dt * 1000) | date:'EEEE, MMM d'}}:
         {{dailyForecast.weather[0].main}}
         - Min: {{dailyForecast.temp.min | number:'.0-0'}}
