@@ -1,10 +1,9 @@
 <div class="container-fluid">
   <app-add-zipcode> </app-add-zipcode>
     <div *ngIf="getDisplayType() == 'cards'; else tabsDisplay">
-        <app-current-conditions [items]="currentConditionsByZip()"></app-current-conditions>
+        <app-current-conditions [items]="currentConditionsByZipObs | async"></app-current-conditions>
     </div>
     <ng-template #tabsDisplay>
-        <app-tabs [items]="currentConditionsByZip()"></app-tabs>
+        <app-tabs [items]="currentConditionsByZipObs | async"></app-tabs>
     </ng-template>
-
 </div>

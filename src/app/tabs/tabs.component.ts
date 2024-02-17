@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
 import {LocationService} from '../location.service';
 import {TabsOptions} from './tabs-options.model';
 import {WeatherService} from '../weather.service';
@@ -8,6 +8,7 @@ import {Router} from '@angular/router';
 import {forkJoin, Observable, Subscription, timer} from 'rxjs';
 import {map, mergeMap, switchMap, takeUntil} from 'rxjs/operators';
 import {toObservable} from '@angular/core/rxjs-interop';
+import {StorageService} from '../storage.service';
 
 @Component({
   selector: 'app-tabs',
@@ -18,9 +19,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
   protected locationService = inject(LocationService);
   protected weatherService = inject(WeatherService);
   private router = inject(Router);
-  private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
-  private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
-  private locations = this.locationService.locationsSignalObs;
 
   private subscriptions = new Subscription();
 
@@ -40,30 +38,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
     }
 
     this.initActiveState();
-
-    this.subscriptions.add(
-        this.locations.subscribe((data) => {
-          console.log('adding locations in tabs');
-          const calls = [];
-          data.forEach((zipcode) => {
-            calls.push(this.weatherService.addCurrentConditions(zipcode));
-          });
-          forkJoin(calls);
-        })
-    );
-
-    this.subscriptions.add(
-        this.locationAdded.subscribe((data) => {
-          console.log('adding that one location in tabs');
-          this.weatherService.addCurrentConditions(data)
-        })
-    );
-
-    this.subscriptions.add(
-      this.locationRemoved.subscribe((data) => {
-        this.weatherService.removeCurrentConditions(data);
-      })
-    );
   }
 
   removeTab(item: Type): void {
@@ -100,12 +74,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
   }
 
   public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
-    let cachedValue: RefreshInterval = JSON.parse(localStorage.getItem(`_${zipcode}_refreshInterval`));
-    if (!cachedValue) {
-      const intervalPerConfigSelected = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-      cachedValue = AppSettings.refreshIntervals.find((item) => item.value === intervalPerConfigSelected)
-    }
-    return cachedValue;
+    return StorageService.getRefreshIntervalForZipCode(zipcode);
   }
 
   showForecast(zipcode: string) {
@@ -113,7 +82,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
   }
 
   public getDisplayType(): string {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
+    return StorageService.getDisplayType();
   }
 
   ngOnDestroy() {
