@@ -21,6 +21,7 @@ export class AppComponent {
         for (const zipcode of locations) {
             localStorage.setItem(`_${zipcode}_refreshInterval`,
                 JSON.stringify(AppSettings.refreshIntervals.find((item) => item.value === refreshInterval)) );
+            console.log('about to add a location in appcomponent');
             this.locationService.addLocation(zipcode, true);
         }
     }

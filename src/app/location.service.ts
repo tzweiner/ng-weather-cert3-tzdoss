@@ -16,14 +16,16 @@ export class LocationService {
   constructor() { }
 
   addLocation(zipcode: string, fromCache?: boolean) {
-    console.log('adding in locationService')
+    if (this.locations?.includes(zipcode)) {
+      return;
+    }
+    this.locationAddedSubj$.next(zipcode);
     this.locations.push(zipcode);
     if (!fromCache) {
       localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
     }
     localStorage.setItem(`_${zipcode}_refreshInterval`,
         JSON.stringify(AppSettings.refreshIntervals.find((item) => item.value === this.getRefreshInterval())) );
-    this.locationAddedSubj$.next(zipcode);
   }
 
   removeLocation(zipcode: string) {
