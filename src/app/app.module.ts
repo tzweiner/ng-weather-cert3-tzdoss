@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { ZipcodeEntryComponent } from './zipcode-entry/zipcode-entry.component';
+import { AddZipcodeComponent } from './add-zipcode/add-zipcode.component';
 import {LocationService} from './location.service';
 import { ForecastsListComponent } from './forecasts-list/forecasts-list.component';
 import {WeatherService} from './weather.service';
@@ -24,7 +24,7 @@ import {StoreModule} from '@ngrx/store';
 @NgModule({
   declarations: [
     AppComponent,
-    ZipcodeEntryComponent,
+    AddZipcodeComponent,
     ForecastsListComponent,
     CurrentConditionsComponent,
     MainPageComponent,

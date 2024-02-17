@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {AppSettings} from './app-settings';
 import {BehaviorSubject, Observable, Subject, timer} from 'rxjs';
 import {WeatherService} from './weather.service';
@@ -9,7 +9,8 @@ export const LOCATIONS = 'locations';
 @Injectable()
 export class LocationService {
 
-  locations: string[] = [];
+  private locations: string[] = [];
+  private locationsSig = signal<string[]>(this.locations);
   private removedSubject$: Subject<string> = new Subject<string>();
 
   constructor(private weatherService: WeatherService) {
@@ -27,15 +28,17 @@ export class LocationService {
     }
   }
 
-  addLocation(zipcode: string) {
+  addLocation(zipcode: string, fromCache?: boolean) {
     this.locations.push(zipcode);
-    localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
+    if (!fromCache) {
+      localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
+    }
     localStorage.setItem(`_${zipcode}_refreshInterval`,
         JSON.stringify(AppSettings.refreshIntervals.find((item) => item.value === this.getRefreshInterval())) );
-    this.removedSubject$ = new Subject<string>();
-    timer(0, this.getRefreshInterval())
-        // .pipe(takeUntil(this.removedSubject$))
-        .subscribe(() => this.weatherService.addCurrentConditions(zipcode));
+    // this.removedSubject$ = new Subject<string>();
+    // timer(0, this.getRefreshInterval())
+    //     // .pipe(takeUntil(this.removedSubject$))
+    //     .subscribe(() => this.weatherService.addCurrentConditions(zipcode));
   }
 
   removeLocation(zipcode: string) {
@@ -52,5 +55,9 @@ export class LocationService {
 
   private getRefreshInterval(): number {
     return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+  }
+
+  get locationsSignal () {
+    return this.locationsSig.asReadonly();
   }
 }

@@ -11,6 +11,10 @@ export class MainPageComponent {
   protected weatherService = inject(WeatherService);
   protected currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
 
+  constructor() {
+    console.log('constructor in MainPageComponent');
+  }
+
   public getDisplayType(): string {
     return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
   }
