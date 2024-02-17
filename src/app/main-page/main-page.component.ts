@@ -4,6 +4,7 @@ import {WeatherService} from '../weather.service';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {forkJoin, Observable} from 'rxjs';
 import {LocationService} from '../location.service';
+import {StorageService} from '../storage.service';
 
 @Component({
   selector: 'app-main-page',
@@ -18,6 +19,6 @@ export class MainPageComponent {
   }
 
   public getDisplayType(): string {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
+    return StorageService.getDisplayType();
   }
 }

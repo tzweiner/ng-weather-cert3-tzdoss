@@ -8,6 +8,7 @@ import {Router} from '@angular/router';
 import {forkJoin, Observable, Subscription, timer} from 'rxjs';
 import {map, mergeMap, switchMap, takeUntil} from 'rxjs/operators';
 import {toObservable} from '@angular/core/rxjs-interop';
+import {StorageService} from '../storage.service';
 
 @Component({
   selector: 'app-tabs',
@@ -100,12 +101,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
   }
 
   public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
-    let cachedValue: RefreshInterval = JSON.parse(localStorage.getItem(`_${zipcode}_refreshInterval`));
-    if (!cachedValue) {
-      const intervalPerConfigSelected = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-      cachedValue = AppSettings.refreshIntervals.find((item) => item.value === intervalPerConfigSelected)
-    }
-    return cachedValue;
+    return StorageService.getRefreshIntervalForZipCode(zipcode);
   }
 
   showForecast(zipcode: string) {
@@ -113,7 +109,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
   }
 
   public getDisplayType(): string {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
+    return StorageService.getDisplayType();
   }
 
   ngOnDestroy() {

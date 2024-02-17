@@ -8,6 +8,7 @@ import {Forecast} from './forecasts-list/forecast.type';
 import {AppSettings} from './app-settings';
 import {RefreshInterval} from './refresh-interval.model';
 import {switchMap} from 'rxjs/operators';
+import {StorageService} from './storage.service';
 
 @Injectable()
 export class WeatherService {
@@ -58,7 +59,7 @@ export class WeatherService {
   getForecast(zipcode: string): Observable<Forecast> {
     // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
     // return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
-      return timer(0, this.getRefreshInterval().value).pipe(
+      return timer(0, StorageService.getRefreshInterval().value).pipe(
           switchMap(() => this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`))
       );
   }
@@ -79,11 +80,6 @@ export class WeatherService {
     } else {
         return WeatherService.ICON_URL + 'art_clear.png';
     }
-  }
-
-  private getRefreshInterval(): RefreshInterval {
-      const storedInterval = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-      return AppSettings.refreshIntervals.find((i) => i.value === storedInterval)
   }
 
 }

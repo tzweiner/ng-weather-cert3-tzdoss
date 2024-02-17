@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
 import {FormControl, FormGroup} from '@angular/forms';
+import {StorageService} from '../storage.service';
 
 @Component({
   selector: 'app-refresh-interval',
@@ -11,15 +12,8 @@ import {FormControl, FormGroup} from '@angular/forms';
 export class RefreshIntervalComponent {
   public intervals: RefreshInterval[] = AppSettings.refreshIntervals;
   public intervalSelectForm = new FormGroup({
-    intervalSelect: new FormControl(this.intervals.find((i) => {
-      let searchForValue = AppSettings.defaultRefreshInterval;
-      const storedValue = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-      if (storedValue) {
-        searchForValue = storedValue
-      }
-      return i.value === searchForValue;
-    })),
-    displaySelect: new FormControl(JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName)) || AppSettings.defaultDisplayType)
+    intervalSelect: new FormControl(StorageService.initRefreshInterval()),
+    displaySelect: new FormControl(StorageService.getDisplayType() || AppSettings.defaultDisplayType)
   });
 
   constructor() {
@@ -28,25 +22,18 @@ export class RefreshIntervalComponent {
   }
 
   private setInterval(): void {
-    localStorage.setItem(
-        AppSettings.weatherRefreshIntervalName,
-        JSON.stringify(this.intervalSelectForm.controls.intervalSelect.value.value
-      )
-    );
+    StorageService.setRefreshInterval(this.intervalSelectForm.controls.intervalSelect.value.value);
   }
 
   private setDisplay(selection?: string): void {
-    let setTo = JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName));
+    let setTo = StorageService.getDisplayType();
     if (!!selection) {
       setTo = selection;
     }
     if (!setTo) {
       setTo = AppSettings.defaultDisplayType;
     }
-    localStorage.setItem(
-        AppSettings.weatherDisplayTypeName,
-        JSON.stringify(setTo)
-    );
+    StorageService.setDisplayType(setTo);
   }
 
   public intervalSelected(): void {

@@ -2,6 +2,7 @@ import {Injectable, signal} from '@angular/core';
 import {AppSettings} from './app-settings';
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {toObservable} from '@angular/core/rxjs-interop';
+import {StorageService} from './storage.service';
 
 export const LOCATIONS = 'locations';
 
@@ -22,24 +23,19 @@ export class LocationService {
     this.locationAddedSubj$.next(zipcode);
     this.locations.push(zipcode);
     if (!fromCache) {
-      localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
+      StorageService.setLocations(this.locations);
     }
-    localStorage.setItem(`_${zipcode}_refreshInterval`,
-        JSON.stringify(AppSettings.refreshIntervals.find((item) => item.value === this.getRefreshInterval())) );
+    StorageService.setRefreshIntervalForZipCode(zipcode);
   }
 
   removeLocation(zipcode: string) {
     const index = this.locations.indexOf(zipcode);
     if (index !== -1) {
       this.locations.splice(index, 1);
-      localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
-      localStorage.removeItem(`_${zipcode}_refreshInterval`);
+      StorageService.setLocations(this.locations);
+      StorageService.deleteRefreshIntervalForZipcode(zipcode);
       this.locationRemovedSubj$.next(zipcode);
     }
-  }
-
-  private getRefreshInterval(): number {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
   }
 
   get locationsSignalObs () {

@@ -6,6 +6,7 @@ import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
 import {forkJoin, Observable, Subscription} from 'rxjs';
+import {StorageService} from '../storage.service';
 
 @Component({
   selector: 'app-current-conditions',
@@ -75,16 +76,16 @@ export class CurrentConditionsComponent implements OnDestroy {
   }
 
   public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
-    let cachedValue: RefreshInterval = JSON.parse(localStorage.getItem(`_${zipcode}_refreshInterval`));
+    let cachedValue: RefreshInterval = StorageService.getRefreshIntervalForZipCode(zipcode);
     if (!cachedValue) {
-      const intervalPerConfigSelected = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+      const intervalPerConfigSelected = StorageService.getRefreshIntervalValue();
       cachedValue = AppSettings.refreshIntervals.find((item) => item.value === intervalPerConfigSelected)
     }
     return cachedValue;
   }
 
   public getDisplayType(): string {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
+    return StorageService.getDisplayType();
   }
 
   ngOnDestroy() {
