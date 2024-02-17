@@ -17,7 +17,7 @@ export class LocationService {
     }
     this.locations.push(zipcode);
     if (!fromCache) {
-      StorageService.setLocations(this.locations);
+      StorageService.addZipcodeToLocations(zipcode);
     }
     StorageService.setRefreshIntervalForZipCode(zipcode);
     this.locationAddedSubj$.next(zipcode);

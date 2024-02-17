@@ -23,18 +23,7 @@ export class AppComponent implements OnDestroy {
     private timers: TimerForZipcode[] = [];
 
     constructor(private locationService: LocationService, private weatherService: WeatherService) {
-        const locString = StorageService.getLocations();
-        if (!locString) {
-            StorageService.setLocations([]);
-        }
-        let locations = [];
-        if (locString) {
-            locations = JSON.parse(locString);
-        }
-        for (const zipcode of locations) {
-            StorageService.initRefreshIntervalForZipcode(zipcode);
-            this.locationService.addLocation(zipcode, true);
-        }
+        this.initFromLocalStorage();
 
         this.subscriptions.add(
             this.locationAdded.pipe(
@@ -65,6 +54,21 @@ export class AppComponent implements OnDestroy {
                 })
             ).subscribe()
         );
+    }
+
+    private initFromLocalStorage(): void {
+        const locString = StorageService.getLocations();
+        if (!locString) {
+            StorageService.setLocations([]);
+        }
+        let locations = [];
+        if (locString) {
+            locations = JSON.parse(locString);
+        }
+        for (const zipcode of locations) {
+            StorageService.initRefreshIntervalForZipcode(zipcode);
+            this.locationService.addLocation(zipcode, true);
+        }
     }
 
     private killTimer(zipcode: string) {
