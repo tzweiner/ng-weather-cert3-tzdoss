@@ -1,13 +1,11 @@
-import {Injectable, signal} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ReplaySubject} from 'rxjs';
-import {toObservable} from '@angular/core/rxjs-interop';
 import {StorageService} from './storage.service';
 
 @Injectable()
 export class LocationService {
 
   private locations: string[] = [];
-  private locationsSig = signal<string[]>(this.locations);
   private locationAddedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
   private locationRemovedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
 
@@ -33,10 +31,6 @@ export class LocationService {
       StorageService.deleteRefreshIntervalForZipcode(zipcode);
       this.locationRemovedSubj$.next(zipcode);
     }
-  }
-
-  get locationsSignalObs () {
-    return toObservable(this.locationsSig.asReadonly());
   }
 
   getLocationAddedObs () {

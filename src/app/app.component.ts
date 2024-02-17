@@ -3,7 +3,12 @@ import {LocationService} from './location.service';
 import { Observable, Subscription, timer} from 'rxjs';
 import {WeatherService} from './weather.service';
 import {StorageService} from './storage.service';
-import {mergeMap, tap} from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
+
+export interface TimerForZipcode {
+    zipcode: string;
+    timer: Subscription;
+}
 
 @Component({
   selector: 'app-root',
@@ -14,6 +19,7 @@ export class AppComponent implements OnDestroy {
     private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
     private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
     private subscriptions: Subscription = new Subscription();
+    private timers: TimerForZipcode[] = [];
 
     constructor(private locationService: LocationService, private weatherService: WeatherService) {
         const locString = StorageService.getLocations();
@@ -33,21 +39,54 @@ export class AppComponent implements OnDestroy {
         this.subscriptions.add(
             this.locationAdded.pipe(
                 tap((data) => console.log('locationAdded', data)),
-                mergeMap((zipcode) =>
-                    timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
-                        // takeUntil(this.locationRemoved),
+                tap((zipcode) => {
+                    const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
                         mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
                             tap(data => this.weatherService.addCurrentConditions(zipcode, data))
-                        )))
-                    )
-            ).subscribe()
+                        )));
+                    this.timers.push({zipcode, timer: thisTimer.subscribe()});
+                    return thisTimer;
+                }),
+                // mergeMap((zipcode) => {
+                //         const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
+                //             mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
+                //                 tap(data => this.weatherService.addCurrentConditions(zipcode, data))
+                //             )));
+                //         this.timers.push({zipcode, timer: thisTimer.subscribe()});
+                //         return thisTimer;
+                //     })
+            ).subscribe((zipcode) => {
+                // const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
+                //     mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
+                //         tap(data => this.weatherService.addCurrentConditions(zipcode, data))
+                //     )));
+                // this.timers.push({zipcode, timer: thisTimer});
+                // return thisTimer;
+            })
         );
 
         this.subscriptions.add(
-          this.locationRemoved.subscribe((data) => {
-            this.weatherService.removeCurrentConditions(data);
-          })
+            this.locationRemoved.pipe(
+                tap((zipcode) => console.log(`heard that ${zipcode} was removed`)),
+                map((zipcode) => {
+                    this.weatherService.removeCurrentConditions(zipcode);
+                    this.killTimer(zipcode);
+                })
+            ).subscribe()
         );
+
+        // this.subscriptions.add(
+        //   this.locationRemoved.subscribe((data) => {
+        //     this.weatherService.removeCurrentConditions(data);
+        //   })
+        // );
+    }
+
+    private killTimer(zipcode: string) {
+        const thisTimer = this.timers.find((timer) => timer.zipcode === zipcode);
+        if (!!thisTimer) {
+            thisTimer.timer.unsubscribe();
+        }
     }
 
     ngOnDestroy() {

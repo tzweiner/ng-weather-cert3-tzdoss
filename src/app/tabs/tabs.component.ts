@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
 import {LocationService} from '../location.service';
 import {TabsOptions} from './tabs-options.model';
 import {WeatherService} from '../weather.service';

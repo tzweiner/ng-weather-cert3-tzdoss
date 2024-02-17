@@ -1,22 +1,21 @@
-import {Component, inject, Signal} from '@angular/core';
-import {AppSettings} from '../app-settings';
+import {ChangeDetectionStrategy, Component, inject, Signal} from '@angular/core';
 import {WeatherService} from '../weather.service';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
-import {forkJoin, Observable} from 'rxjs';
-import {LocationService} from '../location.service';
+import {Observable} from 'rxjs';
 import {StorageService} from '../storage.service';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-main-page',
-  templateUrl: './main-page.component.html'
+  templateUrl: './main-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainPageComponent {
   protected weatherService = inject(WeatherService);
-  protected currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
+  private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
+  protected currentConditionsByZipObs: Observable<ConditionsAndZip[]> = toObservable(this.currentConditionsByZip);
 
-  constructor() {
-    console.log('constructor in MainPageComponent');
-  }
+  constructor() { }
 
   public getDisplayType(): string {
     return StorageService.getDisplayType();

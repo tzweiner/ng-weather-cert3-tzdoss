@@ -1,11 +1,11 @@
-import {Component, inject, Input, OnDestroy, Signal} from '@angular/core';
+import {Component, inject, Input, OnDestroy} from '@angular/core';
 import {WeatherService} from '../weather.service';
 import {LocationService} from '../location.service';
 import {Router} from '@angular/router';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
-import {forkJoin, Observable, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {StorageService} from '../storage.service';
 
 @Component({
@@ -18,9 +18,6 @@ export class CurrentConditionsComponent implements OnDestroy {
   protected weatherService = inject(WeatherService);
   private router = inject(Router);
   protected locationService = inject(LocationService);
-  private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
-  private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
-  private locations = this.locationService.locationsSignalObs;
 
   private subscriptions = new Subscription();
 
