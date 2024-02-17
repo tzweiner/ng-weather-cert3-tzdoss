@@ -74,4 +74,16 @@ export class StorageService {
     public static deleteRefreshIntervalForZipcode(zipcode: string): void {
         localStorage.removeItem(`_${zipcode}_refreshInterval`);
     }
+
+    public static deleteZipcodeFromList(zipcode: string): void {
+        this.deleteRefreshIntervalForZipcode(zipcode);
+        const list = JSON.parse(this.getLocations());
+        if (list?.length) {
+            const index = list.indexOf(zipcode);
+            if (index !== -1) {
+                list.splice(index, 1);
+            }
+            this.setLocations(list);
+        }
+    }
 }

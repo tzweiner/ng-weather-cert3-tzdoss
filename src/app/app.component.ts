@@ -18,6 +18,7 @@ export interface TimerForZipcode {
 export class AppComponent implements OnDestroy {
     private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
     private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
+    private getConditionsFailed: Observable<string> = this.weatherService.getConditionsFailed();
     private subscriptions: Subscription = new Subscription();
     private timers: TimerForZipcode[] = [];
 
@@ -32,13 +33,11 @@ export class AppComponent implements OnDestroy {
         }
         for (const zipcode of locations) {
             StorageService.initRefreshIntervalForZipcode(zipcode);
-            console.log('about to add a location in appComponent');
             this.locationService.addLocation(zipcode, true);
         }
 
         this.subscriptions.add(
             this.locationAdded.pipe(
-                tap((data) => console.log('locationAdded', data)),
                 tap((zipcode) => {
                     const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
                         mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
@@ -47,27 +46,11 @@ export class AppComponent implements OnDestroy {
                     this.timers.push({zipcode, timer: thisTimer.subscribe()});
                     return thisTimer;
                 }),
-                // mergeMap((zipcode) => {
-                //         const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
-                //             mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
-                //                 tap(data => this.weatherService.addCurrentConditions(zipcode, data))
-                //             )));
-                //         this.timers.push({zipcode, timer: thisTimer.subscribe()});
-                //         return thisTimer;
-                //     })
-            ).subscribe((zipcode) => {
-                // const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
-                //     mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
-                //         tap(data => this.weatherService.addCurrentConditions(zipcode, data))
-                //     )));
-                // this.timers.push({zipcode, timer: thisTimer});
-                // return thisTimer;
-            })
+            ).subscribe()
         );
 
         this.subscriptions.add(
             this.locationRemoved.pipe(
-                tap((zipcode) => console.log(`heard that ${zipcode} was removed`)),
                 map((zipcode) => {
                     this.weatherService.removeCurrentConditions(zipcode);
                     this.killTimer(zipcode);
@@ -75,11 +58,13 @@ export class AppComponent implements OnDestroy {
             ).subscribe()
         );
 
-        // this.subscriptions.add(
-        //   this.locationRemoved.subscribe((data) => {
-        //     this.weatherService.removeCurrentConditions(data);
-        //   })
-        // );
+        this.subscriptions.add(
+            this.getConditionsFailed.pipe(
+                map((zipcode) => {
+                    this.killTimer(zipcode);
+                })
+            ).subscribe()
+        );
     }
 
     private killTimer(zipcode: string) {
