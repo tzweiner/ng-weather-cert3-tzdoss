@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {RefreshInterval} from './refresh-interval.model';
 import {AppSettings} from './app-settings';
-import {LOCATIONS} from './location.service';
-import {ConditionsAndZip} from './conditions-and-zip.type';
+
+export const LOCATIONS = 'locations';
 
 @Injectable()
 export class StorageService {

@@ -7,7 +7,7 @@ import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
 import {AppSettings} from './app-settings';
 import {RefreshInterval} from './refresh-interval.model';
-import {switchMap} from 'rxjs/operators';
+import {concatMap, map, mergeMap, skipUntil, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {StorageService} from './storage.service';
 
 @Injectable()
@@ -21,22 +21,51 @@ export class WeatherService {
   constructor(private http: HttpClient) {
   }
 
-    addCurrentConditions(zipcode: string): void {
-      if (!zipcode.trim()) {
-          return;
-      }
+    public addCurrentConditionsHttp(zipcode: string): Observable<CurrentConditions> {
         // Here we make a request to get the current conditions data from the API.
         // Note the use of backticks and an expression to insert the zipcode
-        this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-            .subscribe(data => this.currentConditions.update(conditions => {
-                const exists = conditions.find((cond) => cond.zip === zipcode);
-                if (exists) {
-                    exists.data = data;
-                    return conditions;
-                }
-                return [...conditions, {zip: zipcode, data}];
-            }));
+        // return this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`).pipe(
+        //     skipUntil(timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)))
+        // );
+        if (!zipcode) {
+            return;
+        }
+        return this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`);
+        // return timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
+        //     switchMap(() => this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`).pipe(
+        //         tap((data) => console.log('in hereeeeeee'))
+        //     ))
+        // )
     }
+
+    addCurrentConditions(zipcode: string, data: CurrentConditions): void {
+        if (!zipcode.trim()) {
+            return;
+        }
+        this.currentConditions.update(conditions => {
+            const exists = conditions.find((cond) => cond.zip === zipcode);
+            if (exists) {
+                exists.data = data;
+                return conditions;
+            }
+            return [...conditions, {zip: zipcode, data}];
+        })
+    }
+
+    // addCurrentConditions(zipcode: string): void {
+    //   if (!zipcode.trim()) {
+    //       return;
+    //   }
+    //     this.addCurrentConditionsHttp(zipcode)
+    //         .subscribe(data => this.currentConditions.update(conditions => {
+    //             const exists = conditions.find((cond) => cond.zip === zipcode);
+    //             if (exists) {
+    //                 exists.data = data;
+    //                 return conditions;
+    //             }
+    //             return [...conditions, {zip: zipcode, data}];
+    //         }));
+    // }
 
     removeCurrentConditions(zipcode: string) {
       if (!zipcode) {

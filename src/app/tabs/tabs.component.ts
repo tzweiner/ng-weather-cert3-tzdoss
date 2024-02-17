@@ -19,9 +19,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
   protected locationService = inject(LocationService);
   protected weatherService = inject(WeatherService);
   private router = inject(Router);
-  private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
-  private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
-  private locations = this.locationService.locationsSignalObs;
 
   private subscriptions = new Subscription();
 
@@ -41,30 +38,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
     }
 
     this.initActiveState();
-
-    this.subscriptions.add(
-        this.locations.subscribe((data) => {
-          console.log('adding locations in tabs');
-          const calls = [];
-          data.forEach((zipcode) => {
-            calls.push(this.weatherService.addCurrentConditions(zipcode));
-          });
-          forkJoin(calls);
-        })
-    );
-
-    this.subscriptions.add(
-        this.locationAdded.subscribe((data) => {
-          console.log('adding that one location in tabs');
-          this.weatherService.addCurrentConditions(data)
-        })
-    );
-
-    this.subscriptions.add(
-      this.locationRemoved.subscribe((data) => {
-        this.weatherService.removeCurrentConditions(data);
-      })
-    );
   }
 
   removeTab(item: Type): void {

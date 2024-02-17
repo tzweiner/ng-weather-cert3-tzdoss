@@ -37,38 +37,6 @@ export class CurrentConditionsComponent implements OnDestroy {
     if (this.getDisplayType() !== 'cards') {
       return;
     }
-    this.subscriptions.add(
-        this.locations.subscribe((data) => {
-          console.log('adding locations in cards');
-          if (!data?.length) {
-            return;
-          }
-          const calls = [];
-          data.forEach((zipcode) => {
-            calls.push(this.weatherService.addCurrentConditions(zipcode));
-          });
-          forkJoin(calls);
-        })
-    );
-
-    this.subscriptions.add(
-        this.locationAdded.subscribe((data) => {
-          console.log('adding that one location in cards');
-          if (!data) {
-            return;
-          }
-          this.weatherService.addCurrentConditions(data)
-        })
-    );
-
-    this.subscriptions.add(
-        this.locationRemoved.subscribe((data) => {
-          if (!data) {
-            return;
-          }
-          this.weatherService.removeCurrentConditions(data);
-        })
-    );
   }
 
   showForecast(zipcode: string) {
