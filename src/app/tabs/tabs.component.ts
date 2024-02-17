@@ -1,20 +1,28 @@
-import {Component, inject, Input, OnChanges} from '@angular/core';
+import {Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
 import {LocationService} from '../location.service';
 import {TabsOptions} from './tabs-options.model';
 import {WeatherService} from '../weather.service';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
 import {Router} from '@angular/router';
+import {forkJoin, Observable, Subscription, timer} from 'rxjs';
+import {map, mergeMap, switchMap, takeUntil} from 'rxjs/operators';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
   styleUrl: './tabs.component.css',
 })
-export class TabsComponent<Type extends TabsOptions> implements OnChanges {
+export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDestroy {
   protected locationService = inject(LocationService);
   protected weatherService = inject(WeatherService);
   private router = inject(Router);
+  private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
+  private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
+  private locations = this.locationService.locationsSignalObs;
+
+  private subscriptions = new Subscription();
 
   private _items: Type[];
   @Input() set items(data: Type[]) {
@@ -27,7 +35,35 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   }
 
   constructor() {
+    if (this.getDisplayType() !== 'tabs') {
+      return;
+    }
+
     this.initActiveState();
+
+    this.subscriptions.add(
+        this.locations.subscribe((data) => {
+          console.log('adding locations in tabs');
+          const calls = [];
+          data.forEach((zipcode) => {
+            calls.push(this.weatherService.addCurrentConditions(zipcode));
+          });
+          forkJoin(calls);
+        })
+    );
+
+    this.subscriptions.add(
+        this.locationAdded.subscribe((data) => {
+          console.log('adding that one location in tabs');
+          this.weatherService.addCurrentConditions(data)
+        })
+    );
+
+    this.subscriptions.add(
+      this.locationRemoved.subscribe((data) => {
+        this.weatherService.removeCurrentConditions(data);
+      })
+    );
   }
 
   removeTab(item: Type): void {
@@ -74,6 +110,14 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
 
   showForecast(zipcode: string) {
     this.router.navigate(['/forecast', zipcode])
+  }
+
+  public getDisplayType(): string {
+    return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
 }

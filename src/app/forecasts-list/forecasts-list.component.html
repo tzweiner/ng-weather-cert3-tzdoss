@@ -1,4 +1,4 @@
-<div *ngIf="forecast | async as data">
+<div *ngIf="forecast() as data">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">5-day forecast for {{data?.city.name}}</h3>

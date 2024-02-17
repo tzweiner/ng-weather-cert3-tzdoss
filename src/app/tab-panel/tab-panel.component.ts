@@ -7,6 +7,7 @@ import {TabsOptions} from '../tabs/tabs-options.model';
   styleUrl: './tab-panel.component.scss'
 })
 export class TabPanelComponent<Type extends TabsOptions> {
+  @ContentChild('tabPanels', { static: false }) tabPanelsTemplateRef: TemplateRef<any>;
   private _items: Type[];
   @Input() set items(data: Type[]) {
     if (data) {
@@ -16,6 +17,4 @@ export class TabPanelComponent<Type extends TabsOptions> {
   get items(): Type[] {
     return this._items;
   }
-
-  @ContentChild('tabPanels', { static: false }) tabPanelsTemplateRef: TemplateRef<any>;
 }

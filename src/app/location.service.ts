@@ -1,58 +1,56 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {AppSettings} from './app-settings';
-import {timer} from 'rxjs';
-import {Store} from '@ngrx/store';
-import {CurrentConditionsAndZipActions} from './store/actions/current-conditions-and-zip.actions';
+import {BehaviorSubject, ReplaySubject} from 'rxjs';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 export const LOCATIONS = 'locations';
 
 @Injectable()
 export class LocationService {
 
-  locations: string[] = [];
+  private locations: string[] = [];
+  private locationsSig = signal<string[]>(this.locations);
+  private locationAddedSubj$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private locationRemovedSubj$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  constructor(private store: Store) {
-    const locString = localStorage.getItem(LOCATIONS);
-    if (locString) {
-      this.locations = JSON.parse(locString);
-    }
-    for (const loc of this.locations) {
-      if (!loc) { // empty string
-        continue;
-      }
-      this.store.dispatch(CurrentConditionsAndZipActions.addZip({zipcode: loc}));
-      timer(this.getRefreshInterval(), this.getRefreshInterval()).subscribe(() => {
-        this.store.dispatch(CurrentConditionsAndZipActions.updateZip({zipcode: loc}))
-      });
-    }
-  }
+  constructor() { }
 
-  addLocation(zipcode: string) {
-    if (!zipcode) {   // empty string
+  addLocation(zipcode: string, fromCache?: boolean) {
+    if (this.locations?.includes(zipcode)) {
       return;
     }
-    const index = this.locations.indexOf(zipcode);
-    if (index !== -1) {   // already exists
-      return;
-    }
+    this.locationAddedSubj$.next(zipcode);
     this.locations.push(zipcode);
-    localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
-    this.store.dispatch(CurrentConditionsAndZipActions.addZip({zipcode: zipcode}));
-    timer(this.getRefreshInterval(), this.getRefreshInterval()).subscribe(() => {
-      this.store.dispatch(CurrentConditionsAndZipActions.updateZip({zipcode: zipcode}))
-    });
+    if (!fromCache) {
+      localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
+    }
+    localStorage.setItem(`_${zipcode}_refreshInterval`,
+        JSON.stringify(AppSettings.refreshIntervals.find((item) => item.value === this.getRefreshInterval())) );
   }
 
   removeLocation(zipcode: string) {
     const index = this.locations.indexOf(zipcode);
     if (index !== -1) {
       this.locations.splice(index, 1);
-      localStorage.setItem(LOCATIONS, JSON.stringify(this.locations.filter(loc => loc !== '')));
-      this.store.dispatch(CurrentConditionsAndZipActions.removeZip({zipcode: zipcode}));
+      localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
+      localStorage.removeItem(`_${zipcode}_refreshInterval`);
+      this.locationRemovedSubj$.next(zipcode);
     }
   }
 
   private getRefreshInterval(): number {
     return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+  }
+
+  get locationsSignalObs () {
+    return toObservable(this.locationsSig.asReadonly());
+  }
+
+  getLocationAddedObs () {
+    return this.locationAddedSubj$;
+  }
+
+  getLocationRemovedObs () {
+    return this.locationRemovedSubj$;
   }
 }
