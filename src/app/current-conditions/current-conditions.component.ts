@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
+import {forkJoin, Observable} from 'rxjs';
 
 @Component({
   selector: 'app-current-conditions',
@@ -16,6 +17,9 @@ export class CurrentConditionsComponent {
   protected weatherService = inject(WeatherService);
   private router = inject(Router);
   protected locationService = inject(LocationService);
+  private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
+  private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
+  private locations = this.locationService.locationsSignalObs;
 
   @Input() set items(data: ConditionsAndZip[]) {
     if (data) {
@@ -26,12 +30,35 @@ export class CurrentConditionsComponent {
     return this._items;
   }
 
-  showForecast(zipcode: string) {
-    this.router.navigate(['/forecast', zipcode])
+  constructor() {
+    this.locations.subscribe((data) => {
+      if (!data?.length) {
+        return;
+      }
+      const calls = [];
+      data.forEach((zipcode) => {
+        calls.push(this.weatherService.addCurrentConditions(zipcode));
+      });
+      forkJoin(calls);
+    })
+
+    this.locationAdded.subscribe((data) => {
+      if (!data) {
+        return;
+      }
+      this.weatherService.addCurrentConditions(data);
+    });
+
+    this.locationRemoved.subscribe((data) => {
+      if (!data) {
+        return;
+      }
+      this.weatherService.removeCurrentConditions(data);
+    });
   }
 
-  public getDisplayType(): string {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName))
+  showForecast(zipcode: string) {
+    this.router.navigate(['/forecast', zipcode])
   }
 
   public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {

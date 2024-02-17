@@ -7,6 +7,7 @@ import {TabsOptions} from '../tabs/tabs-options.model';
   styleUrls: ['./tab.component.css']
 })
 export class TabComponent<Type extends TabsOptions> {
+  @ContentChild('tabs', { static: false }) tabsTemplateRef: TemplateRef<any>;
   private _items: Type[];
   @Input() set items(data: Type[]) {
     if (data) {
@@ -16,6 +17,4 @@ export class TabComponent<Type extends TabsOptions> {
   get items(): Type[] {
     return this._items;
   }
-
-  @ContentChild('tabs', { static: false }) tabsTemplateRef: TemplateRef<any>;
 }

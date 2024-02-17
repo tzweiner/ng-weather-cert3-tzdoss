@@ -5,6 +5,9 @@ import {WeatherService} from '../weather.service';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
 import {Router} from '@angular/router';
+import {forkJoin, Observable, timer} from 'rxjs';
+import {map, mergeMap, switchMap, takeUntil} from 'rxjs/operators';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tabs',
@@ -15,6 +18,9 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   protected locationService = inject(LocationService);
   protected weatherService = inject(WeatherService);
   private router = inject(Router);
+  private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
+  private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
+  private locations = this.locationService.locationsSignalObs;
 
   private _items: Type[];
   @Input() set items(data: Type[]) {
@@ -28,6 +34,31 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
 
   constructor() {
     this.initActiveState();
+
+    this.locations.subscribe((data) => {
+      if (!data?.length) {
+        return;
+      }
+      const calls = [];
+      data.forEach((zipcode) => {
+        calls.push(this.weatherService.addCurrentConditions(zipcode));
+      });
+      forkJoin(calls);
+    });
+
+    this.locationAdded.subscribe((data) => {
+      if (!data) {
+        return;
+      }
+      this.weatherService.addCurrentConditions(data)
+    });
+
+    this.locationRemoved.subscribe((data) => {
+      if (!data) {
+        return;
+      }
+      this.weatherService.removeCurrentConditions(data);
+    });
   }
 
   removeTab(item: Type): void {
@@ -74,6 +105,11 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
 
   showForecast(zipcode: string) {
     this.router.navigate(['/forecast', zipcode])
+  }
+
+  private getRefreshInterval(): RefreshInterval {
+    const storedInterval = JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+    return AppSettings.refreshIntervals.find((i) => i.value === storedInterval)
   }
 
 }

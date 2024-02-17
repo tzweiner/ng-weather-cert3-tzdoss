@@ -1,5 +1,5 @@
 import {Injectable, Signal, signal} from '@angular/core';
-import {EMPTY, Observable, Subscription, timer} from 'rxjs';
+import {Observable, timer} from 'rxjs';
 
 import {HttpClient} from '@angular/common/http';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
@@ -7,7 +7,7 @@ import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
 import {AppSettings} from './app-settings';
 import {RefreshInterval} from './refresh-interval.model';
-import {skipUntil, switchMap, take} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
 
 @Injectable()
 export class WeatherService {
@@ -21,6 +21,9 @@ export class WeatherService {
   }
 
     addCurrentConditions(zipcode: string): void {
+      if (!zipcode.trim()) {
+          return;
+      }
         // Here we make a request to get the current conditions data from the API.
         // Note the use of backticks and an expression to insert the zipcode
         this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
@@ -31,13 +34,13 @@ export class WeatherService {
                     return conditions;
                 }
                 return [...conditions, {zip: zipcode, data}];
-            }),
-            error => {
-                // this.store.dispatch(CurrentConditionsAndZipActions.updateZipFailed({error}))
-            });
+            }));
     }
 
     removeCurrentConditions(zipcode: string) {
+      if (!zipcode) {
+          return;
+      }
         this.currentConditions.update(conditions => {
             for (const i in conditions) {
                 if (conditions[i].zip === zipcode) {

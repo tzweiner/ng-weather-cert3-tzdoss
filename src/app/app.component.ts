@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {LOCATIONS, LocationService} from './location.service';
 import {AppSettings} from './app-settings';
-import {timer} from 'rxjs';
+import {forkJoin, Observable, timer} from 'rxjs';
 import {WeatherService} from './weather.service';
 
 @Component({
@@ -11,7 +11,7 @@ import {WeatherService} from './weather.service';
 })
 export class AppComponent {
 
-    constructor(private locationService: LocationService, private weatherService: WeatherService) {
+    constructor(private locationService: LocationService) {
         const refreshInterval = this.getRefreshInterval();
         const locString = localStorage.getItem(LOCATIONS);
         let locations = [];

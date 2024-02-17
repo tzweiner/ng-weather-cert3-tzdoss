@@ -1,4 +1,4 @@
-<app-tab [items]="items">--{{items}}
+<app-tab [items]="items">
     <ng-template let-tab #tabs>
         <div class="tab" [ngClass]="{ 'is-tab-selected': tab.active }" (click)="activateTab(tab)">
             {{tab.data.name}} ({{tab.zip}})
