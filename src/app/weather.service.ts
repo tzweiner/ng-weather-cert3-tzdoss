@@ -71,9 +71,11 @@ export class WeatherService {
 
   getForecast(zipcode: string): Observable<Forecast> {
     // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
-    // return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
-      return timer(0, StorageService.getRefreshInterval().value).pipe(
-          switchMap(() => this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`))
+      return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`).pipe(
+          tap((forecast) => this.currentConditions.update(conditions => {
+              conditions.find((cond) => cond.zip === zipcode).forecast = forecast;
+              return conditions;
+          }) )
       );
   }
 

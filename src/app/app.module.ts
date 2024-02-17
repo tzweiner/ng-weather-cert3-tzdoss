@@ -5,7 +5,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
 import { AddZipcodeComponent } from './add-zipcode/add-zipcode.component';
 import {LocationService} from './location.service';
-import { ForecastsListComponent } from './forecasts-list/forecasts-list.component';
+import {ForecastsListComponent} from './forecasts-list/forecasts-list.component';
 import {WeatherService} from './weather.service';
 import { CurrentConditionsComponent } from './current-conditions/current-conditions.component';
 import { MainPageComponent } from './main-page/main-page.component';
