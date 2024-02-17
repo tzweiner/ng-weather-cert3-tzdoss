@@ -20,9 +20,6 @@ export class ForecastsListComponent {
 
   constructor(protected weatherService: WeatherService, route: ActivatedRoute) {
       this.zipcode = route.snapshot.paramMap.get('zipcode');
-      // this.forecast = timer(0, StorageService.getRefreshIntervalValueForZipCode(this.zipcode)).pipe(
-      //     switchMap(() => weatherService.getForecast(this.zipcode))
-      // );
       this.forecast = toSignal(weatherService.getForecast(this.zipcode));
   }
 
