@@ -27,9 +27,9 @@ export class LocationService {
   removeLocation(zipcode: string) {
     const index = this.locations.indexOf(zipcode);
     if (index !== -1) {
-      this.locations.splice(index, 1);    console.log('this.locations', this.locations);
+      this.locations.splice(index, 1);
       StorageService.setLocations(this.locations);
-      StorageService.updateActiveItemOnRemove(zipcode);
+      StorageService.recalculateActiveItem(zipcode);
       StorageService.deleteRefreshIntervalForZipcode(zipcode);
       this.locationRemovedSubj$.next(zipcode);
     }

@@ -1,4 +1,4 @@
-import {Component, ContentChild, HostListener, inject, Input, TemplateRef} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import {TabsOptions} from '../tabs/tabs-options.model';
 import {WeatherService} from '../weather.service';
 import {Router} from '@angular/router';

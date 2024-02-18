@@ -95,7 +95,7 @@ export class StorageService {
         }
     }
 
-    public static updateActiveItemOnRemove(zipcode: string): void {
+    public static recalculateActiveItem(zipcode: string): void {
         const list = JSON.parse(this.getLocations());
         const preselectedActiveItem = this.getActiveItem();
         if (!list.length) {
