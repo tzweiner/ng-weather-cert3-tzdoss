@@ -10,7 +10,7 @@ import {StorageService} from '../storage.service';
 })
 export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   protected locationService = inject(LocationService);
-  private _items: Type[];
+  private _items: TabsOptions[];
   private templates = ['button', 'default', 'fun'];
   private templatesAssigned = false;
 
@@ -19,13 +19,12 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
       this._items = data;
     }
   }
-  get items(): Type[] {
+  get items(): TabsOptions[] {
     return this._items;
   }
 
   constructor() {
     this.initActiveState();
-    this.assignRandomTemplates();
   }
 
   removeTab(item: Type): void {
@@ -41,6 +40,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
       } else {
         item.active = false;
       }
+      item.template = 'default'
     });
   }
 
@@ -61,18 +61,11 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
     }
   }
 
-  private assignRandomTemplates(): void {
-    this._items?.forEach((item) => {
-      const num = Math.floor(Math.random() * 3) + 1;
-      item.template = this.templates[num - 1];
-    });
+  public getTemplate(): string {
+    return StorageService.getTabTemplate();
   }
 
   ngOnChanges(): void {
     this.initActiveState();
-    if (!this.templatesAssigned) {
-      this.assignRandomTemplates();
-    }
   }
-
 }

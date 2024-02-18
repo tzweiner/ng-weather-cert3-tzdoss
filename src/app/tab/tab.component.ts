@@ -1,5 +1,6 @@
 import {Component, HostListener, Input} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
+import {StorageService} from '../storage.service';
 
 @Component({
   selector: 'app-tab',
@@ -17,6 +18,10 @@ export class TabComponent<Type extends TabsOptions> {
 
   get item(): Type {
     return this._item;
+  }
+
+  public getTemplate(): string {
+    return StorageService.getTabTemplate();
   }
 
 }

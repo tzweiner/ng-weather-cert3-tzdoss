@@ -5,6 +5,7 @@ import {Injectable} from '@angular/core';
 export class SharedService {
 
     toggleView$: BehaviorSubject<string> = new BehaviorSubject('');
+    toggleTabTemplate$: BehaviorSubject<string> = new BehaviorSubject('');
 
     constructor() { }
 }

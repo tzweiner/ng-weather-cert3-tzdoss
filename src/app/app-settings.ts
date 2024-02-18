@@ -40,4 +40,5 @@ export class AppSettings {
   public static readonly weatherDisplayTypeName = '_weather_display_type';
   public static readonly weatherActiveItemName = '_weather_active_item';
   public static readonly defaultDisplayType = 'tabs';
+  public static readonly defaultTabTemplate = 'default';
 }

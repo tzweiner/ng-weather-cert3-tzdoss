@@ -15,12 +15,14 @@ export class RefreshIntervalComponent {
   public intervals: RefreshInterval[] = AppSettings.refreshIntervals;
   public intervalSelectForm = new FormGroup({
     intervalSelect: new FormControl(StorageService.initRefreshInterval()),
-    displaySelect: new FormControl(StorageService.getDisplayType() || AppSettings.defaultDisplayType)
+    displaySelect: new FormControl(StorageService.getDisplayType() || AppSettings.defaultDisplayType),
+    tabTemplateSelect: new FormControl(StorageService.getTabTemplate() || AppSettings.defaultTabTemplate)
   });
 
   constructor() {
     this.setInterval();
     this.setDisplay();
+    this.setTabTemplate();
   }
 
   private setInterval(): void {
@@ -36,6 +38,23 @@ export class RefreshIntervalComponent {
       setTo = AppSettings.defaultDisplayType;
     }
     StorageService.setDisplayType(setTo);
+    if (setTo === 'cards') {
+      this.intervalSelectForm.get('tabTemplateSelect').disable();
+    } else {
+      this.intervalSelectForm.get('tabTemplateSelect').enable();
+    }
+    this.shared.toggleView$.next(setTo);
+  }
+
+  private setTabTemplate(selection?: string): void {
+    let setTo = StorageService.getTabTemplate();
+    if (!!selection) {
+      setTo = selection;
+    }
+    if (!setTo) {
+      setTo = AppSettings.defaultTabTemplate;
+    }
+    StorageService.setTabTemplateType(setTo);
     this.shared.toggleView$.next(setTo);
   }
 
@@ -46,5 +65,17 @@ export class RefreshIntervalComponent {
   public displaySelected(event): void {
     const target = event.target;
     this.setDisplay(target.value);
+    if (target.value === 'cards') {
+      this.intervalSelectForm.get('tabTemplateSelect').disable();
+    }
+  }
+
+  public tabTemplateSelected(event): void {
+    const target = event.target;
+    this.setTabTemplate(target.value);
+  }
+
+  public getDisplay(): string {
+    return StorageService.getDisplayType();
   }
 }

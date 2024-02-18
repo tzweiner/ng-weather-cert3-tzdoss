@@ -49,12 +49,16 @@
 
 .tab.active.fun:hover {
     color: red;
-    font-size: 1.5em;
+    font-style: italic;
 }
 
 .tab.button {
     border: none;
     color: white;
+    background-color: #337ab7;
+}
+
+.tab.button:hover {
     background-color: #617aa0;
 }
 

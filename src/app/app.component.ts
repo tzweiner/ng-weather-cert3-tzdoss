@@ -3,7 +3,7 @@ import {LocationService} from './location.service';
 import { Observable, Subscription, timer} from 'rxjs';
 import {WeatherService} from './weather.service';
 import {StorageService} from './storage.service';
-import {concatMap, debounceTime, delay, map, mergeMap, tap} from 'rxjs/operators';
+import {concatMap, map, mergeMap, tap} from 'rxjs/operators';
 
 export interface TimerForZipcode {
     zipcode: string;
@@ -30,7 +30,6 @@ export class AppComponent implements OnDestroy {
                 tap((zipcode) => {
                     const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
                         mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
-                            delay(1000),
                             tap(data => this.weatherService.addCurrentConditions(zipcode, data)),
                             concatMap(() => this.weatherService.getForecast(zipcode))
                         )));
