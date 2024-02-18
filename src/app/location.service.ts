@@ -29,8 +29,6 @@ export class LocationService {
     if (index !== -1) {
       this.locations.splice(index, 1);
       StorageService.setLocations(this.locations);
-      StorageService.recalculateActiveItem(zipcode);
-      StorageService.deleteRefreshIntervalForZipcode(zipcode);
       this.locationRemovedSubj$.next(zipcode);
     }
   }

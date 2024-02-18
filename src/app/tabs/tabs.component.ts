@@ -1,13 +1,7 @@
-import {ChangeDetectionStrategy, Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
 import {LocationService} from '../location.service';
 import {TabsOptions} from './tabs-options.model';
-import {WeatherService} from '../weather.service';
-import {RefreshInterval} from '../refresh-interval.model';
-import {AppSettings} from '../app-settings';
-import {Router} from '@angular/router';
-import {forkJoin, Observable, Subscription, timer} from 'rxjs';
-import {map, mergeMap, switchMap, takeUntil} from 'rxjs/operators';
-import {toObservable} from '@angular/core/rxjs-interop';
+import {Subscription} from 'rxjs';
 import {StorageService} from '../storage.service';
 
 @Component({
@@ -29,10 +23,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
   }
 
   constructor() {
-    if (this.getDisplayType() !== 'tabs') {
-      return;
-    }
-
     this.initActiveState();
   }
 
