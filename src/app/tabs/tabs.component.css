@@ -34,6 +34,30 @@
     top: 2px;
 }
 
+.tab.fun {
+    border-top-left-radius: 35px;
+    border-top-right-radius: 7px;
+}
+
+.tab.fun:hover {
+    color: red;
+}
+
+.tab.active.fun {
+    background-color: #e8c882;
+}
+
+.tab.active.fun:hover {
+    color: red;
+    font-size: 1.5em;
+}
+
+.tab.button {
+    border: none;
+    color: white;
+    background-color: #617aa0;
+}
+
 .tabsPanel {
     clear: left;
     display: none;

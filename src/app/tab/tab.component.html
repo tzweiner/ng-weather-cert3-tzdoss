@@ -1,2 +1,3 @@
-<ng-content select="[default]" *ngIf="state === 'default'"></ng-content>
-<ng-content select="[active]" *ngIf="state === 'active'"></ng-content>
+<ng-content select="[default]" *ngIf="item.template === 'default'"></ng-content>
+<ng-content select="[fun]" *ngIf="item.template === 'fun'"></ng-content>
+<ng-content select="[button]" *ngIf="item.template === 'button'"></ng-content>

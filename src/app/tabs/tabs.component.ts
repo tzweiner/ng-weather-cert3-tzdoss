@@ -1,7 +1,6 @@
-import {Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Component, inject, Input, OnChanges} from '@angular/core';
 import {LocationService} from '../location.service';
-import {TabsOptions} from './tabs-options.model';
-import {Subscription} from 'rxjs';
+import {TabsOptions} from '../tabs-options.model';
 import {StorageService} from '../storage.service';
 
 @Component({
@@ -12,6 +11,9 @@ import {StorageService} from '../storage.service';
 export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   protected locationService = inject(LocationService);
   private _items: Type[];
+  private templates = ['button', 'default', 'fun'];
+  private templatesAssigned = false;
+
   @Input() set items(data: Type[]) {
     if (data) {
       this._items = data;
@@ -22,11 +24,8 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   }
 
   constructor() {
-    if (this.getDisplayType() !== 'tabs') {
-      return;
-    }
-
     this.initActiveState();
+    this.assignRandomTemplates();
   }
 
   removeTab(item: Type): void {
@@ -62,12 +61,18 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
     }
   }
 
-  ngOnChanges(): void {
-    this.initActiveState();
+  private assignRandomTemplates(): void {
+    this._items?.forEach((item) => {
+      const num = Math.floor(Math.random() * 3) + 1;
+      item.template = this.templates[num - 1];
+    });
   }
 
-  public getDisplayType(): string {
-    return StorageService.getDisplayType();
+  ngOnChanges(): void {
+    this.initActiveState();
+    if (!this.templatesAssigned) {
+      this.assignRandomTemplates();
+    }
   }
 
 }

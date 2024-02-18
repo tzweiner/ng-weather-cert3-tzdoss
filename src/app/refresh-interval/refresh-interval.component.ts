@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {RefreshInterval} from '../refresh-interval.model';
 import {AppSettings} from '../app-settings';
 import {FormControl, FormGroup} from '@angular/forms';
 import {StorageService} from '../storage.service';
+import {SharedService} from '../shared.service';
 
 @Component({
   selector: 'app-refresh-interval',
@@ -10,6 +11,7 @@ import {StorageService} from '../storage.service';
   styleUrl: './refresh-interval.component.css'
 })
 export class RefreshIntervalComponent {
+  private shared = inject(SharedService);
   public intervals: RefreshInterval[] = AppSettings.refreshIntervals;
   public intervalSelectForm = new FormGroup({
     intervalSelect: new FormControl(StorageService.initRefreshInterval()),
@@ -34,6 +36,7 @@ export class RefreshIntervalComponent {
       setTo = AppSettings.defaultDisplayType;
     }
     StorageService.setDisplayType(setTo);
+    this.shared.toggleView$.next(setTo);
   }
 
   public intervalSelected(): void {

@@ -4,6 +4,10 @@ import {AppSettings} from './app-settings';
 
 export const LOCATIONS = 'locations';
 
+// If a zipcode entry returns an http error, cache these zipcodes for future reference
+// The intent is to intercept any future bad requests by checking this list
+export const INVALID_ZIPCODES = 'invalid_zipcodes';
+
 @Injectable()
 export class StorageService {
     public static getRefreshInterval(): RefreshInterval {
@@ -32,12 +36,24 @@ export class StorageService {
         return localStorage.getItem(LOCATIONS);
     }
 
+    public static getOrInitLocations(): string[] {
+        const list = this.getLocations();
+        if (!list) {
+            this.setLocations([])
+        }
+        return JSON.parse(this.getLocations());
+    }
+
     public static getDisplayType(): string {
         return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName));
     }
 
     public static getActiveItem(): string {
         return JSON.parse(localStorage.getItem(AppSettings.weatherActiveItemName));
+    }
+
+    public static getInvalidZipcodes(): string {
+        return localStorage.getItem(INVALID_ZIPCODES);
     }
 
     public static setLocations(locations: string[]): void {
@@ -63,6 +79,10 @@ export class StorageService {
         localStorage.setItem(AppSettings.weatherActiveItemName, JSON.stringify(zipcode));
     }
 
+    public static setInvalidZipcodes(list: string[]): void {
+        localStorage.setItem(INVALID_ZIPCODES, JSON.stringify(list))
+    }
+
     public static initRefreshIntervalForZipcode(zipcode: string): void {
         localStorage.setItem(`_${zipcode}_refreshInterval`,
             JSON.stringify(StorageService.getRefreshInterval().value) );
@@ -77,6 +97,15 @@ export class StorageService {
             }
             return i.value === searchForValue;
         });
+    }
+
+    public static initLists(): void {
+        if (!this.getLocations()) {
+            this.setLocations([]);
+        }
+        if (!this.getInvalidZipcodes()) {
+            this.setInvalidZipcodes([]);
+        }
     }
 
     public static deleteRefreshIntervalForZipcode(zipcode: string): void {
@@ -111,6 +140,20 @@ export class StorageService {
         const list = this.getLocations() ? JSON.parse(this.getLocations()) : this.setLocations([]);
         list.push(zipcode);
         this.setLocations(list);
+    }
+
+    public static addZipcodeToInvalidZipcodes(zipcode: string): void {
+        const list = this.getInvalidZipcodes() ? JSON.parse(this.getInvalidZipcodes()) : this.setInvalidZipcodes([]);
+        list.push(zipcode);
+        this.setInvalidZipcodes(list);
+    }
+
+    public static isZipcodeValid(zipcode: string): boolean {
+        const list = this.getInvalidZipcodes() ? JSON.parse(this.getInvalidZipcodes()) : [];
+        if (!list.length) {
+            return true;
+        }
+        return !list.includes(zipcode);
     }
 
     public static addZipcodeToLocationsCheckExists(zipcode: string): void {

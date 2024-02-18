@@ -3,7 +3,7 @@ import {LocationService} from './location.service';
 import { Observable, Subscription, timer} from 'rxjs';
 import {WeatherService} from './weather.service';
 import {StorageService} from './storage.service';
-import {concatMap, map, mergeMap, tap} from 'rxjs/operators';
+import {concatMap, debounceTime, delay, map, mergeMap, tap} from 'rxjs/operators';
 
 export interface TimerForZipcode {
     zipcode: string;
@@ -30,6 +30,7 @@ export class AppComponent implements OnDestroy {
                 tap((zipcode) => {
                     const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
                         mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
+                            delay(1000),
                             tap(data => this.weatherService.addCurrentConditions(zipcode, data)),
                             concatMap(() => this.weatherService.getForecast(zipcode))
                         )));
@@ -43,7 +44,9 @@ export class AppComponent implements OnDestroy {
             this.locationRemoved.pipe(
                 map((zipcode) => {
                     this.weatherService.removeCurrentConditions(zipcode);
+                    StorageService.deleteZipcodeFromList(zipcode);
                     StorageService.recalculateActiveItem(zipcode);
+                    StorageService.deleteRefreshIntervalForZipcode(zipcode);
                     this.killTimer(zipcode);
                 })
             ).subscribe()
@@ -53,17 +56,18 @@ export class AppComponent implements OnDestroy {
             this.getConditionsFailed.pipe(
                 map((zipcode) => {
                     this.killTimer(zipcode);
+                    StorageService.deleteZipcodeFromList(zipcode);
                     StorageService.recalculateActiveItem(zipcode);
+                    StorageService.addZipcodeToInvalidZipcodes(zipcode);
                 })
             ).subscribe()
         );
     }
 
     private initFromLocalStorage(): void {
+        StorageService.initLists();
+
         const locString = StorageService.getLocations();
-        if (!locString) {
-            StorageService.setLocations([]);
-        }
         let locations = [];
         if (locString) {
             locations = JSON.parse(locString);

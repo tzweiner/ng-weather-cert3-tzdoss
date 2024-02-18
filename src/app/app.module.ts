@@ -21,6 +21,7 @@ import {TabPanelComponent} from './tab-panel/tab-panel.component';
 import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
 import {StorageService} from './storage.service';
+import {SharedService} from './shared.service';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,7 @@ import {StorageService} from './storage.service';
         StoreModule.forRoot(),
         EffectsModule.forRoot()
     ],
-  providers: [LocationService, WeatherService, StorageService],
+  providers: [LocationService, WeatherService, StorageService, SharedService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
