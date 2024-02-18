@@ -1,7 +1,7 @@
 <div class="well">
     <form [formGroup]="intervalSelectForm">
-        <div class="form-group" style="float: left; margin-right: 40px;">
-            <h5 style="margin-top: 0;">Select how frequently weather data should be updated</h5>
+        <div class="form-group right-gutter-40">
+            <h5 class="margin-top-0">Select how frequently weather data should be updated</h5>
             <select formControlName="intervalSelect" class="form-control" (change)="intervalSelected()" id="intervalSelect">
                 <option *ngFor="let interval of intervals" [ngValue]="interval">
                     {{ interval.name }}
@@ -10,15 +10,15 @@
         </div>
         <div class="form-group">
             <h5>Tabs or Cards</h5>
-            <div style="float: left; margin-right: 20px;">
+            <div class="right-gutter-20">
                 <label>
-                    <input type="radio" value="tabs" (click)="displaySelected($event)" formControlName="displaySelect" style="margin-right: 10px;">
+                    <input type="radio" value="tabs" (click)="displaySelected($event)" formControlName="displaySelect" class="margin-right-10">
                     <span>Tabs</span>
                 </label>
             </div>
             <div>
                 <label>
-                    <input type="radio" value="cards" (click)="displaySelected($event)" formControlName="displaySelect" style="margin-right: 10px;">
+                    <input type="radio" value="cards" (click)="displaySelected($event)" formControlName="displaySelect" class="margin-right-10">
                     <span>Cards</span>
                 </label>
             </div>

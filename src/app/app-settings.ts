@@ -15,6 +15,18 @@ export class AppSettings {
       name: '10 seconds',
     },
     {
+      value: 20000,
+      name: '20 seconds',
+    },
+    {
+      value: 60000,
+      name: '1 minute',
+    },
+    {
+      value: 300000,
+      name: '5 minutes',
+    },
+    {
       value: 3600000,
       name: '1 hour',
     },
@@ -24,7 +36,8 @@ export class AppSettings {
     }
   ];
   public static readonly defaultRefreshInterval = this.refreshIntervals[2].value; // 10 secs
-  public static readonly weatherRefreshIntervalName = 'weather_refresh_interval';
-  public static readonly weatherDisplayTypeName = 'weather_display_type';
-  public static readonly defaultDisplayType = 'cards';
+  public static readonly weatherRefreshIntervalName = '_weather_refresh_interval';
+  public static readonly weatherDisplayTypeName = '_weather_display_type';
+  public static readonly weatherActiveItemName = '_weather_active_item';
+  public static readonly defaultDisplayType = 'tabs';
 }

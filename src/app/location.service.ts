@@ -1,57 +1,45 @@
-import { Injectable } from '@angular/core';
-import {WeatherService} from './weather.service';
-import {AppSettings} from './app-settings';
-import {timer} from 'rxjs';
-
-export const LOCATIONS = 'locations';
+import {Injectable} from '@angular/core';
+import {ReplaySubject} from 'rxjs';
+import {StorageService} from './storage.service';
 
 @Injectable()
 export class LocationService {
 
-  locations: string[] = [];
+  private locations: string[] = [];
+  private locationAddedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
+  private locationRemovedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
 
-  constructor(private weatherService: WeatherService) {
-    const locString = localStorage.getItem(LOCATIONS);
-    if (locString) {
-      this.locations = JSON.parse(locString);
-    }
-    for (const loc of this.locations) {
-      if (!loc) { // empty string
-        continue;
-      }
-      this.weatherService.addCurrentConditions(loc);
-      timer(this.getTimeoutValue(), this.getTimeoutValue()).subscribe(() => {
-        this.weatherService.updateCurrentConditions(loc);
-      });
-    }
-  }
+  constructor() { }
 
-  addLocation(zipcode: string) {
-    if (!zipcode) {   // empty string
-      return;
-    }
-    const index = this.locations.indexOf(zipcode);
-    if (index !== -1) {   // already exists
+  addLocation(zipcode: string, fromCache?: boolean) {
+    if (this.locations?.includes(zipcode)) {
       return;
     }
     this.locations.push(zipcode);
-    localStorage.setItem(LOCATIONS, JSON.stringify(this.locations));
-    this.weatherService.addCurrentConditions(zipcode);
-    timer(this.getTimeoutValue(), this.getTimeoutValue()).subscribe(() => {
-      this.weatherService.updateCurrentConditions(zipcode);
-    });
+    if (!fromCache) {
+      StorageService.addZipcodeToLocations(zipcode);
+    }
+    StorageService.setRefreshIntervalForZipCode(zipcode);
+    StorageService.setActiveItem(zipcode);
+    this.locationAddedSubj$.next(zipcode);
   }
 
   removeLocation(zipcode: string) {
     const index = this.locations.indexOf(zipcode);
     if (index !== -1) {
       this.locations.splice(index, 1);
-      localStorage.setItem(LOCATIONS, JSON.stringify(this.locations.filter(loc => loc !== '')));
-      this.weatherService.removeCurrentConditions(zipcode);
+      StorageService.setLocations(this.locations);
+      StorageService.recalculateActiveItem(zipcode);
+      StorageService.deleteRefreshIntervalForZipcode(zipcode);
+      this.locationRemovedSubj$.next(zipcode);
     }
   }
 
-  private getTimeoutValue(): number {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
+  getLocationAddedObs () {
+    return this.locationAddedSubj$;
+  }
+
+  getLocationRemovedObs () {
+    return this.locationRemovedSubj$;
   }
 }

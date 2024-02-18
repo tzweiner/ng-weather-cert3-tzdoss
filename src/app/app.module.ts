@@ -3,9 +3,9 @@ import { NgModule } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { ZipcodeEntryComponent } from './zipcode-entry/zipcode-entry.component';
+import { AddZipcodeComponent } from './add-zipcode/add-zipcode.component';
 import {LocationService} from './location.service';
-import { ForecastsListComponent } from './forecasts-list/forecasts-list.component';
+import {ForecastsListComponent} from './forecasts-list/forecasts-list.component';
 import {WeatherService} from './weather.service';
 import { CurrentConditionsComponent } from './current-conditions/current-conditions.component';
 import { MainPageComponent } from './main-page/main-page.component';
@@ -18,11 +18,14 @@ import {RefreshIntervalComponent} from './refresh-interval/refresh-interval.comp
 import {TabsComponent} from './tabs/tabs.component';
 import {TabComponent} from './tab/tab.component';
 import {TabPanelComponent} from './tab-panel/tab-panel.component';
+import {EffectsModule} from '@ngrx/effects';
+import {StoreModule} from '@ngrx/store';
+import {StorageService} from './storage.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ZipcodeEntryComponent,
+    AddZipcodeComponent,
     ForecastsListComponent,
     CurrentConditionsComponent,
     MainPageComponent,
@@ -38,9 +41,11 @@ import {TabPanelComponent} from './tab-panel/tab-panel.component';
         RouterModule,
         routing,
         ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        StoreModule.forRoot(),
+        EffectsModule.forRoot()
     ],
-  providers: [LocationService, WeatherService],
+  providers: [LocationService, WeatherService, StorageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

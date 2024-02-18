@@ -1,10 +1,13 @@
-import {Component} from '@angular/core';
+import {Component, Signal} from '@angular/core';
 import {WeatherService} from '../weather.service';
 import {ActivatedRoute} from '@angular/router';
 import {Forecast} from './forecast.type';
 import {Observable, timer} from 'rxjs';
 import {AppSettings} from '../app-settings';
-import {switchMap} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
+import {RefreshInterval} from '../refresh-interval.model';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {ConditionsAndZip} from '../conditions-and-zip.type';
 
 @Component({
   selector: 'app-forecasts-list',
@@ -14,16 +17,18 @@ import {switchMap} from 'rxjs/operators';
 export class ForecastsListComponent {
 
   zipcode: string;
-  forecast: Observable<Forecast>;
+  forecast: Signal<Forecast>;
+    private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
+    protected currentConditionsByZipObs: Observable<ConditionsAndZip[]> = toObservable(this.currentConditionsByZip);
 
   constructor(protected weatherService: WeatherService, route: ActivatedRoute) {
       this.zipcode = route.snapshot.paramMap.get('zipcode');
-      this.forecast = timer(0, this.getRefreshIntervalValue()).pipe(
-          switchMap(() => weatherService.getForecast(this.zipcode))
+      this.currentConditionsByZipObs = toObservable(this.currentConditionsByZip).pipe(
+          map((conditions: ConditionsAndZip[]) => {
+              conditions.filter((cond) => cond.zip === this.zipcode);
+              return conditions;
+          })
       );
   }
 
-  private getRefreshIntervalValue(): number {
-    return JSON.parse(localStorage.getItem(AppSettings.weatherRefreshIntervalName));
-  }
 }

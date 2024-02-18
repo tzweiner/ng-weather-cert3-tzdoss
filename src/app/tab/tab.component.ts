@@ -1,5 +1,7 @@
-import {Component, ContentChild, Input, TemplateRef} from '@angular/core';
+import {Component, HostListener, Input} from '@angular/core';
 import {TabsOptions} from '../tabs/tabs-options.model';
+
+type State = 'active' | 'default';
 
 @Component({
   selector: 'app-tab',
@@ -7,15 +9,22 @@ import {TabsOptions} from '../tabs/tabs-options.model';
   styleUrls: ['./tab.component.css']
 })
 export class TabComponent<Type extends TabsOptions> {
-  private _items: Type[];
-  @Input() set items(data: Type[]) {
+  private _item: Type;
+  public state: State = 'default';
+
+  @Input() set item(data: Type) {
     if (data) {
-      this._items = data;
+      this._item = data;
     }
   }
-  get items(): Type[] {
-    return this._items;
+
+  @HostListener('click')
+  toggleState() {
+    this.state = 'active';
   }
 
-  @ContentChild('tabs', { static: false }) tabsTemplateRef: TemplateRef<any>;
+  get item(): Type {
+    return this._item;
+  }
+
 }

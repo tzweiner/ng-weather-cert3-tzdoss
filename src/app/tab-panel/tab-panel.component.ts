@@ -1,21 +1,39 @@
-import {Component, ContentChild, Input, TemplateRef} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import {TabsOptions} from '../tabs/tabs-options.model';
+import {WeatherService} from '../weather.service';
+import {Router} from '@angular/router';
+import {RefreshInterval} from '../refresh-interval.model';
+import {StorageService} from '../storage.service';
+
+type State = 'active' | 'default';
 
 @Component({
   selector: 'app-tab-panel',
   templateUrl: './tab-panel.component.html',
-  styleUrl: './tab-panel.component.scss'
+  styleUrl: './tab-panel.component.css'
 })
 export class TabPanelComponent<Type extends TabsOptions> {
-  private _items: Type[];
-  @Input() set items(data: Type[]) {
+  protected weatherService = inject(WeatherService);
+  private router = inject(Router);
+  private _item: Type;
+  public state: State = 'default';
+
+  @Input() set item(data: Type) {
     if (data) {
-      this._items = data;
+      this._item = data;
     }
   }
-  get items(): Type[] {
-    return this._items;
+
+  get item(): Type {
+    return this._item;
   }
 
-  @ContentChild('tabPanels', { static: false }) tabPanelsTemplateRef: TemplateRef<any>;
+  showForecast(zipcode: string) {
+    this.router.navigate(['/forecast', zipcode])
+  }
+
+  public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
+    return StorageService.getRefreshIntervalForZipCode(zipcode);
+  }
+
 }
