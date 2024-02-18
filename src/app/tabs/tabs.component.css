@@ -22,7 +22,7 @@
     }
 }
 
-.tab.is-tab-selected {
+.tab.active {
     background-color: #cccccc;
 }
 
@@ -37,4 +37,8 @@
 .tabsPanel {
     clear: left;
     display: none;
+}
+
+.tabsPanel.active {
+    display: block;
 }

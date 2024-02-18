@@ -43,6 +43,7 @@ export class AppComponent implements OnDestroy {
             this.locationRemoved.pipe(
                 map((zipcode) => {
                     this.weatherService.removeCurrentConditions(zipcode);
+                    StorageService.updateActiveItemOnRemove(zipcode);
                     this.killTimer(zipcode);
                 })
             ).subscribe()
@@ -52,6 +53,7 @@ export class AppComponent implements OnDestroy {
             this.getConditionsFailed.pipe(
                 map((zipcode) => {
                     this.killTimer(zipcode);
+                    StorageService.updateActiveItemOnRemove(zipcode);
                 })
             ).subscribe()
         );

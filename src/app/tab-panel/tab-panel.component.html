@@ -1,4 +1,4 @@
-<div [ngClass]="{ 'show': item.active }">
+<div [ngClass]="{ 'active': item.active }">
     <div class="flex well" (click)="showForecast(item.zip)">
         <div>
             <h3>{{item.data.name}} ({{item.zip}})</h3>
@@ -19,12 +19,3 @@
         </div>
     </div>
 </div>
-
-<!--<ng-container *ngFor="let item of items">-->
-<!--    <ng-container-->
-<!--        *ngIf="tabPanelsTemplateRef"-->
-<!--        [ngTemplateOutlet]="tabPanelsTemplateRef"-->
-<!--        [ngTemplateOutletContext]="{$implicit:item}"-->
-<!--    >-->
-<!--    </ng-container>-->
-<!--</ng-container>-->

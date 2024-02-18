@@ -20,14 +20,16 @@ export class LocationService {
       StorageService.addZipcodeToLocations(zipcode);
     }
     StorageService.setRefreshIntervalForZipCode(zipcode);
+    StorageService.setActiveItem(zipcode);
     this.locationAddedSubj$.next(zipcode);
   }
 
   removeLocation(zipcode: string) {
     const index = this.locations.indexOf(zipcode);
     if (index !== -1) {
-      this.locations.splice(index, 1);
+      this.locations.splice(index, 1);    console.log('this.locations', this.locations);
       StorageService.setLocations(this.locations);
+      StorageService.updateActiveItemOnRemove(zipcode);
       StorageService.deleteRefreshIntervalForZipcode(zipcode);
       this.locationRemovedSubj$.next(zipcode);
     }

@@ -1,18 +1,18 @@
 <div *ngFor="let item of items">
     <app-tab [item]="item">
-        <div class="tab" default (click)="activateTab(item)">
+        <div class="tab" default (click)="activateTab(item)" [ngClass]="{ 'active': item.active}">
             {{item.data.name}} ({{item.zip}})
             <span class="close" (click)="removeTab(item)">&times;</span>
         </div>
-        <div class="tab" active>
+        <div class="tab" active (click)="activateTab(item)" [ngClass]="{ 'active': item.active}">
             {{item.data.name}} ({{item.zip}})
             <span class="close" (click)="removeTab(item)">&times;</span>
         </div>
     </app-tab>
 </div>
-<div style="clear: left;">
+<div>
     <ng-container *ngFor="let item of items" >
-        <app-tab-panel [item]="item"></app-tab-panel>
+        <app-tab-panel [item]="item" class="tabsPanel" [ngClass]="{ 'active': item.active}"></app-tab-panel>
     </ng-container>
 </div>
 
