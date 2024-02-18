@@ -37,7 +37,7 @@ export class WeatherService {
         );
     }
 
-    addCurrentConditions(zipcode: string, data: CurrentConditions): void {  console.log('updating');
+    addCurrentConditions(zipcode: string, data: CurrentConditions): void {
         if (!zipcode.trim()) {
             return;
         }

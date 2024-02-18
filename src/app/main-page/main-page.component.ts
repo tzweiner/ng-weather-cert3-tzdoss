@@ -4,7 +4,6 @@ import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {Observable, Subscription} from 'rxjs';
 import {StorageService} from '../storage.service';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {LocationService} from '../location.service';
 import {tap} from 'rxjs/operators';
 
 @Component({
@@ -21,7 +20,6 @@ export class MainPageComponent implements OnDestroy {
   constructor(private cd: ChangeDetectorRef) {
     this.subscriptions.add(
         this.currentConditionsByZipObs.pipe(
-            tap(() => console.log('heard a change')),
             tap(() => this.cd.markForCheck())
         ).subscribe()
     )

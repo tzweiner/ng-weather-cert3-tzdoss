@@ -1,14 +1,13 @@
-import {Injectable, signal} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ReplaySubject} from 'rxjs';
 import {StorageService} from './storage.service';
-import {ConditionsAndZip} from './conditions-and-zip.type';
 
 @Injectable()
 export class LocationService {
 
   private locations: string[] = [];
   private locationAddedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
-  private locationRemovedSubj$: ReplaySubject<string> = new ReplaySubject<string>();q
+  private locationRemovedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
 
   constructor() { }
 
