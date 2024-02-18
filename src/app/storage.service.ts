@@ -112,4 +112,10 @@ export class StorageService {
         list.push(zipcode);
         this.setLocations(list);
     }
+
+    public static addZipcodeToLocationsCheckExists(zipcode: string): void {
+        const list = this.getLocations() ? JSON.parse(this.getLocations()) : this.setLocations([]);
+        list.push(zipcode);
+        this.setLocations(list);
+    }
 }

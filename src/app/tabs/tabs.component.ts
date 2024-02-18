@@ -1,13 +1,7 @@
-import {ChangeDetectionStrategy, Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
 import {LocationService} from '../location.service';
 import {TabsOptions} from './tabs-options.model';
-import {WeatherService} from '../weather.service';
-import {RefreshInterval} from '../refresh-interval.model';
-import {AppSettings} from '../app-settings';
-import {Router} from '@angular/router';
-import {forkJoin, Observable, Subscription, timer} from 'rxjs';
-import {map, mergeMap, switchMap, takeUntil} from 'rxjs/operators';
-import {toObservable} from '@angular/core/rxjs-interop';
+import {Subscription} from 'rxjs';
 import {StorageService} from '../storage.service';
 
 @Component({
@@ -15,9 +9,8 @@ import {StorageService} from '../storage.service';
   templateUrl: './tabs.component.html',
   styleUrl: './tabs.component.css',
 })
-export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDestroy {
+export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   protected locationService = inject(LocationService);
-  private subscriptions = new Subscription();
   private _items: Type[];
   @Input() set items(data: Type[]) {
     if (data) {
@@ -75,10 +68,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
 
   public getDisplayType(): string {
     return StorageService.getDisplayType();
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
   }
 
 }
