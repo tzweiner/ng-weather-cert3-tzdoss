@@ -37,17 +37,18 @@ export class WeatherService {
         );
     }
 
-    addCurrentConditions(zipcode: string, data: CurrentConditions): void {
+    addCurrentConditions(zipcode: string, data: CurrentConditions): void {  console.log('updating');
         if (!zipcode.trim()) {
             return;
         }
         this.currentConditions.update(conditions => {
-            const exists = conditions.find((cond) => cond.zip === zipcode);
+            const conditionsCopy = [...conditions];
+            const exists = conditionsCopy.find((cond) => cond.zip === zipcode);
             if (exists) {
                 exists.data = data;
-                return conditions;
+                return conditionsCopy;
             }
-            return [...conditions, {zip: zipcode, data}];
+            return [...conditionsCopy, {zip: zipcode, data}];
         })
     }
 
@@ -73,8 +74,9 @@ export class WeatherService {
     // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
       return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`).pipe(
           tap((forecast) => this.currentConditions.update(conditions => {
-              conditions.find((cond) => cond.zip === zipcode).forecast = forecast;
-              return conditions;
+              const conditionsCopy = [...conditions];
+              conditionsCopy.find((cond) => cond.zip === zipcode).forecast = forecast;
+              return [...conditionsCopy];
           }) )
       );
   }
