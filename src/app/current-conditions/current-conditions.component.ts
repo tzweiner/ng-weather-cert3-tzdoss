@@ -30,11 +30,7 @@ export class CurrentConditionsComponent implements OnDestroy {
     return this._items;
   }
 
-  constructor() {
-    if (this.getDisplayType() !== 'cards') {
-      return;
-    }
-  }
+  constructor() { }
 
   showForecast(zipcode: string) {
     this.router.navigate(['/forecast', zipcode])

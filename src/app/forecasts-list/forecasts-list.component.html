@@ -1,7 +1,7 @@
 <div *ngFor="let condition of currentConditionsByZipObs | async">
-  <div class="panel panel-default">
+  <div class="panel panel-default" [ngClass]="{ 'show' : condition.zip === zipcode}">
     <div class="panel-heading">
-      <h3 class="panel-title">5-day forecast for {{condition.forecast?.city.name}}</h3>
+      <h3 class="panel-title">5-day forecast for {{condition.forecast?.city.name}} ({{condition.zip}})</h3>
 
     </div>
     <ul class="list-group">

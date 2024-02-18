@@ -22,10 +22,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   }
 
   constructor() {
-    if (this.getDisplayType() !== 'tabs') {
-      return;
-    }
-
     this.initActiveState();
   }
 
