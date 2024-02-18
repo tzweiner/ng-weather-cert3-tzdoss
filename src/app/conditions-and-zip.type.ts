@@ -6,5 +6,4 @@ export interface ConditionsAndZip {
     zip: string;
     data: CurrentConditions;
     forecast?: Forecast;
-    active?: boolean;
 }

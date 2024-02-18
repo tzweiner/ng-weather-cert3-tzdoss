@@ -57,12 +57,13 @@ export class WeatherService {
           return;
       }
         this.currentConditions.update(conditions => {
-            for (const i in conditions) {
-                if (conditions[i].zip === zipcode) {
-                    conditions.splice(+i, 1);
+            const conditionsCopy = [...conditions];
+            for (const i in conditionsCopy) {
+                if (conditionsCopy[i].zip === zipcode) {
+                    conditionsCopy.splice(+i, 1);
                 }
             }
-            return conditions;
+            return [...conditionsCopy];
         })
     }
 

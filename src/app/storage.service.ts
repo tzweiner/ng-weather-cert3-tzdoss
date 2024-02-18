@@ -36,6 +36,10 @@ export class StorageService {
         return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName));
     }
 
+    public static getActiveItem(): string {
+        return JSON.parse(localStorage.getItem(AppSettings.weatherActiveItemName));
+    }
+
     public static setLocations(locations: string[]): void {
         localStorage.setItem(LOCATIONS, JSON.stringify(locations));
     }
@@ -53,6 +57,10 @@ export class StorageService {
         localStorage.setItem(
             AppSettings.weatherRefreshIntervalName,
             JSON.stringify(interval));
+    }
+
+    public static setActiveItem(zipcode?: string): void {
+        localStorage.setItem(AppSettings.weatherActiveItemName, JSON.stringify(zipcode));
     }
 
     public static initRefreshIntervalForZipcode(zipcode: string): void {
@@ -87,8 +95,20 @@ export class StorageService {
         }
     }
 
-    public static addZipcodeToLocations(zipcode: string): void {
+    public static updateActiveItemOnRemove(zipcode: string): void {
         const list = JSON.parse(this.getLocations());
+        const preselectedActiveItem = this.getActiveItem();
+        if (!list.length) {
+            localStorage.removeItem(AppSettings.weatherActiveItemName);
+            return;
+        }
+        if (preselectedActiveItem === zipcode) {
+            this.setActiveItem(list[0]);
+        }
+    }
+
+    public static addZipcodeToLocations(zipcode: string): void {
+        const list = this.getLocations() ? JSON.parse(this.getLocations()) : this.setLocations([]);
         list.push(zipcode);
         this.setLocations(list);
     }

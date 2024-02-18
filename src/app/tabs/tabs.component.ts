@@ -17,11 +17,7 @@ import {StorageService} from '../storage.service';
 })
 export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDestroy {
   protected locationService = inject(LocationService);
-  protected weatherService = inject(WeatherService);
-  private router = inject(Router);
-
   private subscriptions = new Subscription();
-
   private _items: Type[];
   @Input() set items(data: Type[]) {
     if (data) {
@@ -49,6 +45,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
     this._items.forEach((item) => {
       if (item.zip === itemIn.zip) {
         item.active = true;
+        StorageService.setActiveItem(item.zip);
       } else {
         item.active = false;
       }
@@ -56,29 +53,24 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
   }
 
   private initActiveState(): void {
-    if (this._items?.length === 1) {
-      this._items[0].active = true;
-      return;
-    }
-
-    this._items?.forEach((item) => {
-      item.active = false;
-    });
-    if (this._items?.length) {
-      this._items[0].active = true;
+    const preselectedActiveItem = StorageService.getActiveItem();
+    if (!preselectedActiveItem) {
+      if (this._items?.length) {
+        this._items[0].active = true;
+      }
+    } else {
+      this._items?.forEach((item) => {
+        if (item.zip === preselectedActiveItem) {
+          item.active = true;
+        } else {
+          item.active = false;
+        }
+      });
     }
   }
 
   ngOnChanges(): void {
     this.initActiveState();
-  }
-
-  public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
-    return StorageService.getRefreshIntervalForZipCode(zipcode);
-  }
-
-  showForecast(zipcode: string) {
-    this.router.navigate(['/forecast', zipcode])
   }
 
   public getDisplayType(): string {
