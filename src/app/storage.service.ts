@@ -7,6 +7,7 @@ export const LOCATIONS = 'locations';
 // If a zipcode entry returns an http error, cache these zipcodes for future reference
 // The intent is to intercept any future bad requests by checking this list
 export const INVALID_ZIPCODES = 'invalid_zipcodes';
+export const TAB_TEMPLATE = 'tab_template';
 
 @Injectable()
 export class StorageService {
@@ -48,6 +49,10 @@ export class StorageService {
         return JSON.parse(localStorage.getItem(AppSettings.weatherDisplayTypeName));
     }
 
+    public static getTabTemplate(): string {
+        return JSON.parse(localStorage.getItem(TAB_TEMPLATE));
+    }
+
     public static getActiveItem(): string {
         return JSON.parse(localStorage.getItem(AppSettings.weatherActiveItemName));
     }
@@ -67,6 +72,10 @@ export class StorageService {
 
     public static setDisplayType(type: string): void {
         localStorage.setItem(AppSettings.weatherDisplayTypeName, JSON.stringify(type));
+    }
+
+    public static setTabTemplateType(type: string): void {
+        localStorage.setItem(TAB_TEMPLATE, JSON.stringify(type));
     }
 
     public static setRefreshInterval(interval: number): void {

@@ -1,13 +1,11 @@
 import {Injectable, Signal, signal} from '@angular/core';
-import {EMPTY, Observable, ReplaySubject, timer} from 'rxjs';
+import {EMPTY, Observable, ReplaySubject} from 'rxjs';
 
 import {HttpClient} from '@angular/common/http';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
 import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
-import {AppSettings} from './app-settings';
-import {RefreshInterval} from './refresh-interval.model';
-import {catchError, concatMap, debounceTime, delay, map, mergeMap, skipUntil, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {StorageService} from './storage.service';
 
 @Injectable()

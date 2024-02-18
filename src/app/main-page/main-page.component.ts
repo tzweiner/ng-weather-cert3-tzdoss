@@ -31,6 +31,12 @@ export class MainPageComponent implements OnDestroy {
             tap(() => this.cd.markForCheck())
         ).subscribe()
     );
+
+    this.subscriptions.add(
+        this.shared.toggleTabTemplate$.pipe(
+            tap(() => this.cd.markForCheck())
+        ).subscribe()
+    );
   }
 
   public getDisplayType(): string {
