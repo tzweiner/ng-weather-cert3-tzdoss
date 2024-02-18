@@ -17,11 +17,7 @@ import {StorageService} from '../storage.service';
 })
 export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDestroy {
   protected locationService = inject(LocationService);
-  protected weatherService = inject(WeatherService);
-  private router = inject(Router);
-
   private subscriptions = new Subscription();
-
   private _items: Type[];
   @Input() set items(data: Type[]) {
     if (data) {
@@ -71,14 +67,6 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges, OnDes
 
   ngOnChanges(): void {
     this.initActiveState();
-  }
-
-  public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
-    return StorageService.getRefreshIntervalForZipCode(zipcode);
-  }
-
-  showForecast(zipcode: string) {
-    this.router.navigate(['/forecast', zipcode])
   }
 
   public getDisplayType(): string {

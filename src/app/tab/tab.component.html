@@ -1,8 +1,2 @@
-<ng-container *ngFor="let item of items">
-    <ng-container
-        *ngIf="tabsTemplateRef"
-        [ngTemplateOutlet]="tabsTemplateRef"
-        [ngTemplateOutletContext]="{$implicit:item}"
-    >
-    </ng-container>
-</ng-container>
+<ng-content select="[default]" *ngIf="state === 'default'"></ng-content>
+<ng-content select="[active]" *ngIf="state === 'active'"></ng-content>
