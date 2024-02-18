@@ -4,18 +4,14 @@ import {StorageService} from './storage.service';
 
 @Injectable()
 export class LocationService {
-
-  private locations: string[] = [];
   private locationAddedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
   private locationRemovedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
 
   constructor() { }
 
   addLocation(zipcode: string, fromCache?: boolean) {
-    const list = StorageService.getLocations()
-        ? JSON.parse(StorageService.getLocations())
-        : StorageService.setLocations([]);
-    if (list.includes(zipcode)) {
+    const list = StorageService.getOrInitLocations();
+    if (list.includes(zipcode) && !fromCache) {
       return;
     }
     if (!fromCache) {
@@ -27,9 +23,7 @@ export class LocationService {
   }
 
   removeLocation(zipcode: string) {
-    const list = StorageService.getLocations()
-        ? JSON.parse(StorageService.getLocations())
-        : StorageService.setLocations([]);
+    const list = StorageService.getOrInitLocations();
     if (!list.includes(zipcode)) {
       return;
     }

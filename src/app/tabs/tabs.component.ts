@@ -1,7 +1,6 @@
 import {Component, inject, Input, OnChanges, OnDestroy} from '@angular/core';
 import {LocationService} from '../location.service';
 import {TabsOptions} from './tabs-options.model';
-import {Subscription} from 'rxjs';
 import {StorageService} from '../storage.service';
 
 @Component({

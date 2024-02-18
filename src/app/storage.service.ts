@@ -3,6 +3,9 @@ import {RefreshInterval} from './refresh-interval.model';
 import {AppSettings} from './app-settings';
 
 export const LOCATIONS = 'locations';
+
+// If a zipcode entry returns an http error, cache these zipcodes for future reference
+// The intent is to intercept any future bad requests by checking this list
 export const INVALID_ZIPCODES = 'invalid_zipcodes';
 
 @Injectable()
@@ -31,6 +34,14 @@ export class StorageService {
 
     public static getLocations(): string {
         return localStorage.getItem(LOCATIONS);
+    }
+
+    public static getOrInitLocations(): string[] {
+        const list = this.getLocations();
+        if (!list) {
+            this.setLocations([])
+        }
+        return JSON.parse(this.getLocations());
     }
 
     public static getDisplayType(): string {
@@ -89,8 +100,12 @@ export class StorageService {
     }
 
     public static initLists(): void {
-        this.setLocations([]);
-        this.setInvalidZipcodes([]);
+        if (!this.getLocations()) {
+            this.setLocations([]);
+        }
+        if (!this.getInvalidZipcodes()) {
+            this.setInvalidZipcodes([]);
+        }
     }
 
     public static deleteRefreshIntervalForZipcode(zipcode: string): void {
