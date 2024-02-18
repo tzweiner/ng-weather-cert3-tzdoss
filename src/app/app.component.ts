@@ -57,16 +57,16 @@ export class AppComponent implements OnDestroy {
                     this.killTimer(zipcode);
                     StorageService.deleteZipcodeFromList(zipcode);
                     StorageService.recalculateActiveItem(zipcode);
+                    StorageService.addZipcodeToInvalidZipcodes(zipcode);
                 })
             ).subscribe()
         );
     }
 
     private initFromLocalStorage(): void {
+        StorageService.initLists();
+
         const locString = StorageService.getLocations();
-        if (!locString) {
-            StorageService.setLocations([]);
-        }
         let locations = [];
         if (locString) {
             locations = JSON.parse(locString);
