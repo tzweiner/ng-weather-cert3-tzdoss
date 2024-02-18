@@ -1,5 +1,5 @@
 import {Component, inject, Input} from '@angular/core';
-import {TabsOptions} from '../tabs/tabs-options.model';
+import {TabsOptions} from '../tabs-options.model';
 import {WeatherService} from '../weather.service';
 import {Router} from '@angular/router';
 import {RefreshInterval} from '../refresh-interval.model';
