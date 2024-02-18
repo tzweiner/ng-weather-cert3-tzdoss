@@ -3,6 +3,7 @@ import {RefreshInterval} from './refresh-interval.model';
 import {AppSettings} from './app-settings';
 
 export const LOCATIONS = 'locations';
+export const INVALID_ZIPCODES = 'invalid_zipcodes';
 
 @Injectable()
 export class StorageService {
@@ -40,6 +41,10 @@ export class StorageService {
         return JSON.parse(localStorage.getItem(AppSettings.weatherActiveItemName));
     }
 
+    public static getInvalidZipcodes(): string {
+        return localStorage.getItem(INVALID_ZIPCODES);
+    }
+
     public static setLocations(locations: string[]): void {
         localStorage.setItem(LOCATIONS, JSON.stringify(locations));
     }
@@ -63,6 +68,10 @@ export class StorageService {
         localStorage.setItem(AppSettings.weatherActiveItemName, JSON.stringify(zipcode));
     }
 
+    public static setInvalidZipcodes(list: string[]): void {
+        localStorage.setItem(INVALID_ZIPCODES, JSON.stringify(list))
+    }
+
     public static initRefreshIntervalForZipcode(zipcode: string): void {
         localStorage.setItem(`_${zipcode}_refreshInterval`,
             JSON.stringify(StorageService.getRefreshInterval().value) );
@@ -77,6 +86,11 @@ export class StorageService {
             }
             return i.value === searchForValue;
         });
+    }
+
+    public static initLists(): void {
+        this.setLocations([]);
+        this.setInvalidZipcodes([]);
     }
 
     public static deleteRefreshIntervalForZipcode(zipcode: string): void {
@@ -111,5 +125,19 @@ export class StorageService {
         const list = this.getLocations() ? JSON.parse(this.getLocations()) : this.setLocations([]);
         list.push(zipcode);
         this.setLocations(list);
+    }
+
+    public static addZipcodeToInvalidZipcodes(zipcode: string): void {
+        const list = this.getInvalidZipcodes() ? JSON.parse(this.getInvalidZipcodes()) : this.setInvalidZipcodes([]);
+        list.push(zipcode);
+        this.setInvalidZipcodes(list);
+    }
+
+    public static isZipcodeValid(zipcode: string): boolean {
+        const list = this.getInvalidZipcodes() ? JSON.parse(this.getInvalidZipcodes()) : [];
+        if (!list.length) {
+            return true;
+        }
+        return !list.includes(zipcode);
     }
 }
