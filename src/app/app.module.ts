@@ -18,8 +18,6 @@ import {RefreshIntervalComponent} from './refresh-interval/refresh-interval.comp
 import {TabsComponent} from './tabs/tabs.component';
 import {TabComponent} from './tab/tab.component';
 import {TabPanelComponent} from './tab-panel/tab-panel.component';
-import {EffectsModule} from '@ngrx/effects';
-import {StoreModule} from '@ngrx/store';
 import {StorageService} from './storage.service';
 import {SharedService} from './shared.service';
 
@@ -43,8 +41,6 @@ import {SharedService} from './shared.service';
         routing,
         ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
         ReactiveFormsModule,
-        StoreModule.forRoot(),
-        EffectsModule.forRoot()
     ],
   providers: [LocationService, WeatherService, StorageService, SharedService],
   bootstrap: [AppComponent]

@@ -16,11 +16,6 @@
       "dom"
     ],
     "useDefineForClassFields": false,
-    "strictPropertyInitialization": false,
-    "paths": {
-      "path": [
-        "./node_modules/path-browserify"
-      ]
-    }
+    "strictPropertyInitialization": false
   }
 }

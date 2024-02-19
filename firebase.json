@@ -1,0 +1,9 @@
+{
+  "hosting": [
+    {
+      "target": "tz-weather",
+      "source": ".",
+      "frameworksBackend": {}
+    }
+  ]
+}

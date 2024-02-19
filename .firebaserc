@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "tz-weather": {
+      "hosting": {
+        "tz-weather": [
+          "tz-weather"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "tz-weather"
+  }
+}
