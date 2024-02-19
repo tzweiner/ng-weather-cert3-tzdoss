@@ -1,7 +1,7 @@
 <div class="well">
     <form [formGroup]="intervalSelectForm">
         <div class="form-group right-gutter-40">
-            <h5>Select how frequently weather data should be updated<br />(only applies to subsequent entries)</h5>
+            <h5>Select how frequently weather data should be updated<br />(only applies to <span class="highlight-container"><span class="highlight">subsequent entries</span></span>)</h5>
             <select formControlName="intervalSelect" class="form-control" (change)="intervalSelected()" id="intervalSelect">
                 <option *ngFor="let interval of intervals" [ngValue]="interval">
                     {{ interval.name }}
