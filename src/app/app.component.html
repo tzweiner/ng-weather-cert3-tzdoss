@@ -1,3 +1,10 @@
 <app-refresh-interval></app-refresh-interval>
 <hr />
+<div class="container-fluid" *ngIf="message">
+    <div class="well red-toast">
+        <div class="toast-body">
+            {{message}}
+        </div>
+    </div>
+</div>
 <router-outlet></router-outlet>

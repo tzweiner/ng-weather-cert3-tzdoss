@@ -15,7 +15,7 @@
             <p>This weather card and its 5-day forecast are updated every <span class="highlight-container"><span class="highlight">{{ getZipcodeRefreshInterval(location.zip)?.name }}</span></span></p>
         </div>
         <div>
-            <span class="close" (click)="locationService.removeLocation(location.zip)">&times;</span>
+            <span class="close" (click)="removeTab(location.zip)">&times;</span>
             <img [src]="weatherService.getWeatherIcon(location.data.weather[0].id)" alt="weather image">
         </div>
     </div>

@@ -1,6 +1,13 @@
-import {Component, HostListener, Input} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, inject, Input, Signal} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
 import {StorageService} from '../storage.service';
+import {Observable, Subscription} from 'rxjs';
+import {tap} from 'rxjs/operators';
+import {SharedService} from '../shared.service';
+import {LocationService} from '../location.service';
+import {ConditionsAndZip} from '../conditions-and-zip.type';
+import {toObservable} from '@angular/core/rxjs-interop';
+import {WeatherService} from '../weather.service';
 
 @Component({
   selector: 'app-tab',
@@ -9,6 +16,12 @@ import {StorageService} from '../storage.service';
 })
 export class TabComponent<Type extends TabsOptions> {
   private _item: Type;
+  private subscriptions: Subscription = new Subscription();
+  protected shared = inject(SharedService);
+  protected weatherService = inject(WeatherService);
+  private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
+  protected currentConditionsByZipObs: Observable<ConditionsAndZip[]> = toObservable(this.currentConditionsByZip);
+
 
   @Input() set item(data: Type) {
     if (data) {
@@ -16,12 +29,28 @@ export class TabComponent<Type extends TabsOptions> {
     }
   }
 
-  get item(): Type {
-    return this._item;
+  constructor(private cd: ChangeDetectorRef) {
+    this.subscriptions.add(
+        this.currentConditionsByZipObs.pipe(
+            tap(() => this.cd.markForCheck())
+        ).subscribe()
+    );
+
+    this.subscriptions.add(
+        this.shared.toggleTabTemplate$.pipe(
+            tap(() => this.cd.markForCheck())
+        ).subscribe()
+    );
+
+    this.subscriptions.add(
+        this.shared.toggleView$.pipe(
+            tap(() => this.cd.markForCheck())
+        ).subscribe()
+    );
   }
 
-  public getTemplate(): string {
-    return StorageService.getTabTemplate();
+  get item(): Type {
+    return this._item;
   }
 
 }

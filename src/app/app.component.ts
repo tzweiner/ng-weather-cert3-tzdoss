@@ -21,6 +21,7 @@ export class AppComponent implements OnDestroy {
     private getConditionsFailed: Observable<string> = this.weatherService.getConditionsFailed();
     private subscriptions: Subscription = new Subscription();
     private timers: TimerForZipcode[] = [];
+    public message = '';
 
     constructor(private locationService: LocationService, private weatherService: WeatherService) {
         this.initFromLocalStorage();
@@ -31,7 +32,9 @@ export class AppComponent implements OnDestroy {
                     const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
                         mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
                             tap(data => this.weatherService.addCurrentConditions(zipcode, data)),
-                            concatMap(() => this.weatherService.getForecast(zipcode))
+                            concatMap(() => {
+                                return this.weatherService.getForecast(zipcode);
+                            }),
                         )));
                     this.timers.push({zipcode, timer: thisTimer.subscribe()});
                     return thisTimer;
@@ -56,8 +59,9 @@ export class AppComponent implements OnDestroy {
                 map((zipcode) => {
                     this.killTimer(zipcode);
                     StorageService.deleteZipcodeFromList(zipcode);
-                    StorageService.recalculateActiveItem(zipcode);
+                    StorageService.initActiveItem();
                     StorageService.addZipcodeToInvalidZipcodes(zipcode);
+                    this.showToast(zipcode);
                 })
             ).subscribe()
         );
@@ -79,9 +83,16 @@ export class AppComponent implements OnDestroy {
 
     private killTimer(zipcode: string) {
         const thisTimer = this.timers.find((timer) => timer.zipcode === zipcode);
+        const thisTimerIndex = this.timers.findIndex((timer) => timer.zipcode === zipcode);
         if (!!thisTimer) {
             thisTimer.timer.unsubscribe();
+            this.timers.splice(thisTimerIndex, 1);
         }
+    }
+
+    private showToast(zipcode: string) {
+        this.message = `"${zipcode}" is an invalid zip code.`;
+        setTimeout(() => this.message = '', 2000);
     }
 
     ngOnDestroy() {

@@ -4,7 +4,7 @@ import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {Observable, Subscription} from 'rxjs';
 import {StorageService} from '../storage.service';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {debounceTime, tap} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
 import {SharedService} from '../shared.service';
 
 @Component({
