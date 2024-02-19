@@ -5,7 +5,7 @@
     float: left;
     font-size: 16px;
 
-    transition-property: background-color, border-left-color;
+    transition-property: background-color, border-left-color, text-shadow;
     transition-duration: 600ms;
     transition-delay: 30ms;
 
@@ -37,29 +37,43 @@
 .tab.fun {
     border-top-left-radius: 35px;
     border-top-right-radius: 7px;
+    text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+    text-align: center;
 }
 
 .tab.fun:hover {
-    color: red;
+    text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+    font-style: italic;
 }
 
 .tab.active.fun {
-    background-color: #e8c882;
+    background-color: #ffd500;
+    color: red;
 }
 
 .tab.active.fun:hover {
     color: red;
-    font-style: italic;
+    font-style: normal;
 }
 
 .tab.button {
     border: none;
     color: white;
     background-color: #337ab7;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border: 3px #337ab7 solid;
+
 }
 
 .tab.button:hover {
     background-color: #617aa0;
+}
+
+.tab.active.button {
+    border: 3px #ffd500 solid;
+    background-color: #ffd500;
+    color: black;
 }
 
 .tabsPanel {
