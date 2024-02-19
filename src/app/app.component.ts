@@ -32,7 +32,9 @@ export class AppComponent implements OnDestroy {
                     const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
                         mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
                             tap(data => this.weatherService.addCurrentConditions(zipcode, data)),
-                            concatMap(() => this.weatherService.getForecast(zipcode)),
+                            concatMap(() => {
+                                return this.weatherService.getForecast(zipcode);
+                            }),
                         )));
                     this.timers.push({zipcode, timer: thisTimer.subscribe()});
                     return thisTimer;
@@ -57,7 +59,7 @@ export class AppComponent implements OnDestroy {
                 map((zipcode) => {
                     this.killTimer(zipcode);
                     StorageService.deleteZipcodeFromList(zipcode);
-                    StorageService.recalculateActiveItem(zipcode);
+                    StorageService.initActiveItem();
                     StorageService.addZipcodeToInvalidZipcodes(zipcode);
                     this.showToast(zipcode);
                 })
@@ -81,8 +83,10 @@ export class AppComponent implements OnDestroy {
 
     private killTimer(zipcode: string) {
         const thisTimer = this.timers.find((timer) => timer.zipcode === zipcode);
+        const thisTimerIndex = this.timers.findIndex((timer) => timer.zipcode === zipcode);
         if (!!thisTimer) {
             thisTimer.timer.unsubscribe();
+            this.timers.splice(thisTimerIndex, 1);
         }
     }
 

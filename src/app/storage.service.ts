@@ -117,6 +117,13 @@ export class StorageService {
         }
     }
 
+    public static initActiveItem(): void {
+        const list = this.getOrInitLocations();
+        if (list?.length) {
+            this.setActiveItem(list[0]);
+        }
+    }
+
     public static deleteRefreshIntervalForZipcode(zipcode: string): void {
         localStorage.removeItem(`_${zipcode}_refreshInterval`);
     }

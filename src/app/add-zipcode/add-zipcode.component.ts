@@ -15,6 +15,15 @@ export class AddZipcodeComponent {
       return;
     }
     if (StorageService.isZipcodeValid(zipcode.trim())) {
+
+      const list = StorageService.getOrInitLocations();
+      if (list.includes(zipcode)) { // already entered
+        return;
+      }
+      StorageService.setRefreshIntervalForZipCode(zipcode);
+      StorageService.setActiveItem(zipcode);
+      StorageService.addZipcodeToLocations(zipcode);
+
       this.service.addLocation(zipcode);
     }
   }

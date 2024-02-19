@@ -45,8 +45,8 @@ export class CurrentConditionsComponent implements OnDestroy {
     return cachedValue;
   }
 
-  public getDisplayType(): string {
-    return StorageService.getDisplayType();
+  removeTab(zipcode): void {
+    this.locationService.removeLocation(zipcode);
   }
 
   ngOnDestroy() {

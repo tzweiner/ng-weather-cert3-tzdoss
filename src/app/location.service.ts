@@ -10,24 +10,16 @@ export class LocationService {
   constructor() { }
 
   addLocation(zipcode: string, fromCache?: boolean) {
-    const list = StorageService.getOrInitLocations();
-    if (list.includes(zipcode) && !fromCache) {
-      return;
+    if (fromCache) {
+      StorageService.setRefreshIntervalForZipCode(zipcode);
+      StorageService.setActiveItem(zipcode);
     }
-    if (!fromCache) {
-      StorageService.addZipcodeToLocations(zipcode);
-    }
-    StorageService.setRefreshIntervalForZipCode(zipcode);
-    StorageService.setActiveItem(zipcode);
     this.locationAddedSubj$.next(zipcode);
   }
 
   removeLocation(zipcode: string) {
-    const list = StorageService.getOrInitLocations();
-    if (!list.includes(zipcode)) {
-      return;
-    }
-    const index = list.indexOf(zipcode);
+    let list = StorageService.getOrInitLocations();
+    let index = list.indexOf(zipcode);
     if (index !== -1) {
       list.splice(index, 1);
       StorageService.setLocations(list);
