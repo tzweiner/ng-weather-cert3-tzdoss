@@ -1,10 +1,8 @@
-import {ChangeDetectorRef, Component, HostListener, inject, Input, Signal} from '@angular/core';
+import {ChangeDetectorRef, Component, inject, Input, Signal} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
-import {StorageService} from '../storage.service';
 import {Observable, Subscription} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {SharedService} from '../shared.service';
-import {LocationService} from '../location.service';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {WeatherService} from '../weather.service';
