@@ -21,6 +21,7 @@ export class AppComponent implements OnDestroy {
     private getConditionsFailed: Observable<string> = this.weatherService.getConditionsFailed();
     private subscriptions: Subscription = new Subscription();
     private timers: TimerForZipcode[] = [];
+    public message = '';
 
     constructor(private locationService: LocationService, private weatherService: WeatherService) {
         this.initFromLocalStorage();
@@ -58,6 +59,7 @@ export class AppComponent implements OnDestroy {
                     StorageService.deleteZipcodeFromList(zipcode);
                     StorageService.recalculateActiveItem(zipcode);
                     StorageService.addZipcodeToInvalidZipcodes(zipcode);
+                    this.showToast(zipcode);
                 })
             ).subscribe()
         );
@@ -82,6 +84,11 @@ export class AppComponent implements OnDestroy {
         if (!!thisTimer) {
             thisTimer.timer.unsubscribe();
         }
+    }
+
+    private showToast(zipcode: string) {
+        this.message = `"${zipcode}" is an invalid zip code.`;
+        setTimeout(() => this.message = '', 2000);
     }
 
     ngOnDestroy() {
