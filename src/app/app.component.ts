@@ -1,9 +1,10 @@
 import {Component, OnDestroy} from '@angular/core';
 import {LocationService} from './location.service';
-import { Observable, Subscription, timer} from 'rxjs';
+import {Observable, Subscription, timer} from 'rxjs';
 import {WeatherService} from './weather.service';
 import {StorageService} from './storage.service';
-import {concatMap, map, mergeMap, tap} from 'rxjs/operators';
+import {concatMap, delay, map, mergeMap, tap} from 'rxjs/operators';
+import {CurrentConditions} from './current-conditions/current-conditions.type';
 
 export interface TimerForZipcode {
     zipcode: string;
@@ -18,18 +19,25 @@ export interface TimerForZipcode {
 export class AppComponent implements OnDestroy {
     private locationAdded: Observable<string> = this.locationService.getLocationAddedObs();
     private locationRemoved: Observable<string> = this.locationService.getLocationRemovedObs();
+    private locationPrefetch: Observable<string> = this.locationService.getLocationPrefetchObs();
     private getConditionsFailed: Observable<string> = this.weatherService.getConditionsFailed();
     private subscriptions: Subscription = new Subscription();
     private timers: TimerForZipcode[] = [];
     public message = '';
 
     constructor(private locationService: LocationService, private weatherService: WeatherService) {
-        this.initFromLocalStorage();
+        // this.initFromLocalStorage();
+
+        this.subscriptions.add(
+            this.locationPrefetch.pipe(
+                tap((zipcode) => this.getDataForZipcode(zipcode)),
+            ).subscribe()
+        );
 
         this.subscriptions.add(
             this.locationAdded.pipe(
                 tap((zipcode) => {
-                    const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
+                    const thisTimer = timer(StorageService.getRefreshIntervalValueForZipCode(zipcode), StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
                         mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
                             tap(data => {
                                 this.weatherService.addCurrentConditions(zipcode, data)
@@ -58,6 +66,7 @@ export class AppComponent implements OnDestroy {
 
         this.subscriptions.add(
             this.getConditionsFailed.pipe(
+                delay(800),
                 map((zipcode) => {
                     this.killTimer(zipcode);
                     StorageService.deleteZipcodeFromList(zipcode);
@@ -69,19 +78,19 @@ export class AppComponent implements OnDestroy {
         );
     }
 
-    private initFromLocalStorage(): void {
-        StorageService.initLists();
-
-        const locString = StorageService.getLocations();
-        let locations = [];
-        if (locString) {
-            locations = JSON.parse(locString);
-        }
-        for (const zipcode of locations) {
-            StorageService.initRefreshIntervalForZipcode(zipcode);
-            this.locationService.addLocation(zipcode, true);
-        }
-    }
+    // private initFromLocalStorage(): void {
+    //     StorageService.initLists();
+    //
+    //     const locString = StorageService.getLocations();
+    //     let locations = [];
+    //     if (locString) {
+    //         locations = JSON.parse(locString);
+    //     }
+    //     for (const zipcode of locations) {
+    //         StorageService.initRefreshIntervalForZipcode(zipcode);
+    //         this.locationService.addLocation(zipcode, true);
+    //     }
+    // }
 
     private killTimer(zipcode: string) {
         const thisTimer = this.timers.find((timer) => timer.zipcode === zipcode);
@@ -95,6 +104,21 @@ export class AppComponent implements OnDestroy {
     private showToast(zipcode: string) {
         this.message = `"${zipcode}" is an invalid zip code.`;
         setTimeout(() => this.message = '', 2000);
+    }
+
+    private getDataForZipcode(zipcode: string): void {
+        this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
+            concatMap((conditions: CurrentConditions) => this.weatherService.getForecast(zipcode).pipe(
+                map((forecast) => {
+                    const newLocationData = {
+                        zip: zipcode,
+                        data: conditions,
+                        forecast
+                    };
+                    this.locationService.addLocation(newLocationData);
+                })
+            ))
+        );
     }
 
     ngOnDestroy() {

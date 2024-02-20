@@ -1,6 +1,5 @@
 import {Component, inject, Input} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
-import {WeatherService} from '../weather.service';
 import {Router} from '@angular/router';
 import {RefreshInterval} from '../refresh-interval.model';
 import {StorageService} from '../storage.service';
@@ -13,7 +12,6 @@ type State = 'active' | 'default';
   styleUrl: './tab-panel.component.css'
 })
 export class TabPanelComponent<Type extends TabsOptions> {
-  protected weatherService = inject(WeatherService);
   private router = inject(Router);
   private _item: Type;
   public state: State = 'default';

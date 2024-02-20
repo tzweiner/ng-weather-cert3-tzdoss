@@ -1,7 +1,7 @@
-import {Component, inject, Input, OnChanges} from '@angular/core';
-import {LocationService} from '../location.service';
+import {Component, Input, OnChanges, Output} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
 import {StorageService} from '../storage.service';
+import {EventEmitter} from 'protractor';
 
 @Component({
   selector: 'app-tabs',
@@ -9,8 +9,11 @@ import {StorageService} from '../storage.service';
   styleUrl: './tabs.component.css',
 })
 export class TabsComponent<Type extends TabsOptions> implements OnChanges {
-  protected locationService = inject(LocationService);
   private _items: TabsOptions[];
+
+  @Output()
+  onRemove: EventEmitter = new EventEmitter();
+
 
   @Input() set items(data: Type[]) {
     if (data) {
@@ -26,7 +29,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   }
 
   removeTab(item: Type): void {
-    this.locationService.removeLocation(item.zip);
+    this.onRemove.emit(item.zip);
     this.initActiveState();
   }
 
