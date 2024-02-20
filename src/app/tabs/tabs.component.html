@@ -1,18 +1,18 @@
 <!-- Tabs implemented with content injection -->
 <div *ngFor="let item of items">
     <app-tab [item]="item">
-        <div class="tab" default (click)="activateTab(item)" [ngClass]="{ 'active': item.active}" *ngIf="getTemplate() === 'default'">
+        <div class="tab" default (click)="activateTab(item)" [ngClass]="{ 'active': item.active}"> <!--  *ngIf="getTemplate() === 'default'" -->
             {{item.data.name}} ({{item.zip}})
             <span class="close" (click)="removeTab(item)">&times;</span>
         </div>
-        <div class="tab fun" fun (click)="activateTab(item)" [ngClass]="{ 'active': item.active}" *ngIf="getTemplate() === 'fun'">
-            {{item.data.name}} ({{item.zip}})
-            <span class="close" (click)="removeTab(item)">&times;</span>
-        </div>
-        <button class="tab button" button (click)="activateTab(item)" [ngClass]="{ 'active': item.active}" *ngIf="getTemplate() === 'button'">
-            {{item.data.name}} ({{item.zip}})
-            <span class="close" (click)="removeTab(item)">&times;</span>
-        </button>
+<!--        <div class="tab fun" fun (click)="activateTab(item)" [ngClass]="{ 'active': item.active}" *ngIf="getTemplate() === 'fun'">-->
+<!--            {{item.data.name}} ({{item.zip}})-->
+<!--            <span class="close" (click)="removeTab(item)">&times;</span>-->
+<!--        </div>-->
+<!--        <button class="tab button" button (click)="activateTab(item)" [ngClass]="{ 'active': item.active}" *ngIf="getTemplate() === 'button'">-->
+<!--            {{item.data.name}} ({{item.zip}})-->
+<!--            <span class="close" (click)="removeTab(item)">&times;</span>-->
+<!--        </button>-->
     </app-tab>
 </div>
 <!-- Tabs Panels -->

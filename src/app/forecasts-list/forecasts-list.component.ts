@@ -5,6 +5,7 @@ import {Forecast} from './forecast.type';
 import {Observable} from 'rxjs';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
+import {LocationService} from '../location.service';
 
 @Component({
   selector: 'app-forecasts-list',
@@ -15,10 +16,10 @@ export class ForecastsListComponent {
 
   zipcode: string;
   forecast: Signal<Forecast>;
-    private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
+    private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.locationService.getCurrentLocations();
     protected currentConditionsByZipObs: Observable<ConditionsAndZip[]> = toObservable(this.currentConditionsByZip);
 
-  constructor(protected weatherService: WeatherService, route: ActivatedRoute) {
+  constructor(protected locationService: LocationService, route: ActivatedRoute) {
       this.zipcode = route.snapshot.paramMap.get('zipcode');
   }
 

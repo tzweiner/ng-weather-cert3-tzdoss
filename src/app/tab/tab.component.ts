@@ -13,9 +13,6 @@ export class TabComponent<Type extends TabsOptions> {
   private _item: Type;
   private subscriptions: Subscription = new Subscription();
   protected shared = inject(SharedService);
-  // protected weatherService = inject(WeatherService);
-  // private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
-  // protected currentConditionsByZipObs: Observable<ConditionsAndZip[]> = toObservable(this.currentConditionsByZip);
 
 
   @Input() set item(data: Type) {
@@ -25,11 +22,6 @@ export class TabComponent<Type extends TabsOptions> {
   }
 
   constructor(private cd: ChangeDetectorRef) {
-    // this.subscriptions.add(
-    //     this.currentConditionsByZipObs.pipe(
-    //         tap(() => this.cd.markForCheck())
-    //     ).subscribe()
-    // );
 
     this.subscriptions.add(
         this.shared.toggleTabTemplate$.pipe(

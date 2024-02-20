@@ -65,9 +65,10 @@ export class WeatherService {
         })
     }
 
-  getCurrentConditions(): Signal<ConditionsAndZip[]> {
-    return this.currentConditions.asReadonly();
-  }
+    getForecastHttp(zipcode: string): Observable<Forecast> {
+        // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
+        return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
+    }
 
   getForecast(zipcode: string): Observable<Forecast> {
     // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode

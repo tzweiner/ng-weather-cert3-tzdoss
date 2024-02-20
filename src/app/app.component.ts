@@ -26,10 +26,11 @@ export class AppComponent implements OnDestroy {
     public message = '';
 
     constructor(private locationService: LocationService, private weatherService: WeatherService) {
-        // this.initFromLocalStorage();
+        this.initFromLocalStorage();
 
         this.subscriptions.add(
             this.locationPrefetch.pipe(
+                tap((data) => console.log('will be fetching data for ', data)),
                 tap((zipcode) => this.getDataForZipcode(zipcode)),
             ).subscribe()
         );
@@ -78,19 +79,19 @@ export class AppComponent implements OnDestroy {
         );
     }
 
-    // private initFromLocalStorage(): void {
-    //     StorageService.initLists();
-    //
-    //     const locString = StorageService.getLocations();
-    //     let locations = [];
-    //     if (locString) {
-    //         locations = JSON.parse(locString);
-    //     }
-    //     for (const zipcode of locations) {
-    //         StorageService.initRefreshIntervalForZipcode(zipcode);
-    //         this.locationService.addLocation(zipcode, true);
-    //     }
-    // }
+    private initFromLocalStorage(): void {
+        StorageService.initLists();
+
+        const locString = StorageService.getLocations();
+        let locations = [];
+        if (locString) {
+            locations = JSON.parse(locString);
+        }
+        for (const zipcode of locations) {
+            StorageService.initRefreshIntervalForZipcode(zipcode);
+            this.getDataForZipcode(zipcode);
+        }
+    }
 
     private killTimer(zipcode: string) {
         const thisTimer = this.timers.find((timer) => timer.zipcode === zipcode);
@@ -108,7 +109,7 @@ export class AppComponent implements OnDestroy {
 
     private getDataForZipcode(zipcode: string): void {
         this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
-            concatMap((conditions: CurrentConditions) => this.weatherService.getForecast(zipcode).pipe(
+            concatMap((conditions: CurrentConditions) => this.weatherService.getForecastHttp(zipcode).pipe(
                 map((forecast) => {
                     const newLocationData = {
                         zip: zipcode,
@@ -118,7 +119,7 @@ export class AppComponent implements OnDestroy {
                     this.locationService.addLocation(newLocationData);
                 })
             ))
-        );
+        ).subscribe();
     }
 
     ngOnDestroy() {

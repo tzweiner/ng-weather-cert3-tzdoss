@@ -1,7 +1,6 @@
-import {Component, Input, OnChanges, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
 import {StorageService} from '../storage.service';
-import {EventEmitter} from 'protractor';
 
 @Component({
   selector: 'app-tabs',
@@ -12,7 +11,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   private _items: TabsOptions[];
 
   @Output()
-  onRemove: EventEmitter = new EventEmitter();
+  onRemove: EventEmitter<string> = new EventEmitter();
 
 
   @Input() set items(data: Type[]) {
