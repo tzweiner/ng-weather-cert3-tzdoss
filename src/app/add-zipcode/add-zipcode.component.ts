@@ -8,6 +8,7 @@ import {StorageService} from '../storage.service';
   templateUrl: './add-zipcode.component.html',
 })
 export class AddZipcodeComponent {
+  public message = '';
   constructor(private service: LocationService) { }
 
   addLocation(zipcode: string) {
@@ -18,6 +19,8 @@ export class AddZipcodeComponent {
 
       const list = StorageService.getOrInitLocations();
       if (list.includes(zipcode)) { // already entered
+        this.message = `"${zipcode}" is already entered.`;
+        setTimeout(() => this.message = '', 2000);
         return;
       }
       StorageService.setRefreshIntervalForZipCode(zipcode);
@@ -25,6 +28,9 @@ export class AddZipcodeComponent {
       StorageService.addZipcodeToLocations(zipcode);
 
       this.service.addLocation(zipcode);
+    } else {
+      this.message = `"${zipcode}" is invalid.`;
+      setTimeout(() => this.message = '', 2000);
     }
   }
 

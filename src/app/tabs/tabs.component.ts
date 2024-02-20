@@ -11,8 +11,6 @@ import {StorageService} from '../storage.service';
 export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   protected locationService = inject(LocationService);
   private _items: TabsOptions[];
-  private templates = ['button', 'default', 'fun'];
-  private templatesAssigned = false;
 
   @Input() set items(data: Type[]) {
     if (data) {

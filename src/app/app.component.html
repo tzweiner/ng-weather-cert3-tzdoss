@@ -8,3 +8,12 @@
     </div>
 </div>
 <router-outlet></router-outlet>
+<div class="container-fluid">
+    <div class="well">
+        <h5>Notes:</h5>
+        <ul>
+            <li><em>Error handling</em> is not mentioned in requirements. Some error handling was implemented but not fully established.</li>
+            <li>On this production build, each HTTP call is accompanied by a <em>serviceWorker</em> call. This means that for each zipcode entry there will be 4 calls going out (2 normal and 2 from the serviceWorker) when the timer triggers.</li>
+        </ul>
+    </div>
+</div>

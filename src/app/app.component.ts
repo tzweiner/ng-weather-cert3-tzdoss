@@ -31,7 +31,9 @@ export class AppComponent implements OnDestroy {
                 tap((zipcode) => {
                     const thisTimer = timer(0, StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
                         mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
-                            tap(data => this.weatherService.addCurrentConditions(zipcode, data)),
+                            tap(data => {
+                                this.weatherService.addCurrentConditions(zipcode, data)
+                            }),
                             concatMap(() => {
                                 return this.weatherService.getForecast(zipcode);
                             }),
