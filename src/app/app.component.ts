@@ -5,6 +5,7 @@ import {WeatherService} from './weather.service';
 import {StorageService} from './storage.service';
 import {concatMap, delay, map, mergeMap, tap} from 'rxjs/operators';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
+import {Forecast, List} from './forecasts-list/forecast.type';
 
 export interface TimerForZipcode {
     zipcode: string;
@@ -42,14 +43,10 @@ export class AppComponent implements OnDestroy {
                         mergeMap(() => this.weatherService.getCurrentConditions(zipcode).pipe(
                             concatMap((conditions) => {
                                 const conditionsCopy = {...conditions};
-                                conditionsCopy.weather[0].iconUrl =
-                                    this.weatherService.getWeatherIcon(conditionsCopy.weather[0].id);
+                                this.setIconUrl(conditionsCopy);
                                 return this.weatherService.getForecastHttp(zipcode).pipe(
                                     tap((forecast) => {
-                                        forecast.list.forEach((fc) => {
-                                            fc.weather[0].iconUrl =
-                                                this.weatherService.getWeatherIcon(fc.weather[0].id)
-                                        });
+                                        forecast.list.forEach((fc) => this.setIconUrl(fc));
                                         this.locationService.update({
                                             zip: zipcode,
                                             forecast,
@@ -122,21 +119,22 @@ export class AppComponent implements OnDestroy {
         this.weatherService.getCurrentConditions(zipcode).pipe(
             concatMap((conditions: CurrentConditions) => this.weatherService.getForecastHttp(zipcode).pipe(
                 map((forecast) => {
-                    forecast.list.forEach((fc) => {
-                        fc.weather[0].iconUrl =
-                            this.weatherService.getWeatherIcon(fc.weather[0].id);
-                    })
+                    forecast.list.forEach((fc) => this.setIconUrl(fc))
                     const newLocationData = {
                         zip: zipcode,
                         data: conditions,
                         forecast
                     };
-                    newLocationData.data.weather[0].iconUrl =
-                        this.weatherService.getWeatherIcon(newLocationData.data.weather[0].id);
+                    this.setIconUrl(newLocationData.data);
                     this.locationService.addLocation(newLocationData);
                 })
             ))
         ).subscribe();
+    }
+
+    private setIconUrl(item: (List | CurrentConditions)): void {
+        item.weather[0].iconUrl =
+            this.weatherService.getWeatherIcon(item.weather[0].id);
     }
 
     ngOnDestroy() {
