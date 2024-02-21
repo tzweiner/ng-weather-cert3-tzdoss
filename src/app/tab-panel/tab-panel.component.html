@@ -12,10 +12,14 @@
             <p>
                 <a [routerLink]="['/forecast', item.zip]" >Show 5-day forecast for {{item.data.name}}</a>
             </p>
-            <p>This weather card and its 5-day forecast are updated every <span class="highlight-container"><span class="highlight">{{ getZipcodeRefreshInterval(item.zip).name }}</span></span></p>
+<!--            <p>This weather card and its 5-day forecast are updated every <span class="highlight-container"><span class="highlight">{{ getZipcodeRefreshInterval(item.zip).name }}</span></span></p>-->
         </div>
         <div *ngIf="item.data.weather[0].iconUrl">
             <img [src]="item.data.weather[0].iconUrl" alt="item image">
         </div>
     </div>
 </div>
+
+<ng-content select="[default]"></ng-content>
+<ng-content select="[fun]"></ng-content>
+<ng-content select="[button]"></ng-content>
