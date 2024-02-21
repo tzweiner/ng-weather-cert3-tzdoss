@@ -16,7 +16,7 @@ import {HelloWorldComponent} from '../hello-world/hello-world.component';
 })
 export class MainPageComponent implements OnDestroy {
   Tabs = TabsComponent;
-  Hello = HelloWorldComponent;
+  Hello = HelloWorldComponent;    // for testing
   protected locationService = inject(LocationService);
   protected shared = inject(SharedService);
   private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.locationService.getCurrentLocations();

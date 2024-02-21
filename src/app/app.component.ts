@@ -74,7 +74,7 @@ export class AppComponent implements OnDestroy {
 
         this.subscriptions.add(
             this.getConditionsFailed.pipe(
-                delay(800),
+                delay(600),
                 map((zipcode) => {
                     this.killTimer(zipcode);
                     StorageService.deleteZipcodeFromList(zipcode);
