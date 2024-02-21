@@ -19,7 +19,7 @@ export class ForecastsListComponent {
     private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.locationService.getCurrentLocations();
     protected currentConditionsByZipObs: Observable<ConditionsAndZip[]> = toObservable(this.currentConditionsByZip);
 
-  constructor(protected locationService: LocationService, route: ActivatedRoute) {
+  constructor(protected weatherService: WeatherService, protected locationService: LocationService, route: ActivatedRoute) {
       this.zipcode = route.snapshot.paramMap.get('zipcode');
   }
 

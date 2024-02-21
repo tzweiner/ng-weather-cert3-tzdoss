@@ -23,6 +23,22 @@ export class LocationService {
     this.locationAddedSubj$.next(data.zip);
   }
 
+  update(data: ConditionsAndZip): void {
+    let index = this.locations.findIndex((location) => location.zip === data.zip);
+    this.locations[index].data = data.data;
+    this.locations[index].forecast = data.forecast;
+    this.currentLocations.update(conditions => {
+      const conditionsCopy = [...conditions];
+      for (const i in conditionsCopy) {
+        if (conditionsCopy[i].zip === data.zip) {
+          conditionsCopy[i].data = data.data;
+          conditionsCopy[i].forecast = data.forecast;
+        }
+      }
+      return [...conditionsCopy];
+    })
+  }
+
   removeLocation(zipcode: string) {
     let index = this.locations.findIndex((location) => location.zip === zipcode);
     if (index !== -1) {

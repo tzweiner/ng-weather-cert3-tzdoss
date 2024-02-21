@@ -39,12 +39,24 @@ export class AppComponent implements OnDestroy {
             this.locationAdded.pipe(
                 tap((zipcode) => {
                     const thisTimer = timer(StorageService.getRefreshIntervalValueForZipCode(zipcode), StorageService.getRefreshIntervalValueForZipCode(zipcode)).pipe(
-                        mergeMap(() => this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
-                            tap(data => {
-                                this.weatherService.addCurrentConditions(zipcode, data)
-                            }),
-                            concatMap(() => {
-                                return this.weatherService.getForecast(zipcode);
+                        mergeMap(() => this.weatherService.getCurrentConditions(zipcode).pipe(
+                            concatMap((conditions) => {
+                                const conditionsCopy = {...conditions};
+                                conditionsCopy.weather[0].iconUrl =
+                                    this.weatherService.getWeatherIcon(conditionsCopy.weather[0].id);
+                                return this.weatherService.getForecastHttp(zipcode).pipe(
+                                    tap((forecast) => {
+                                        forecast.list.forEach((fc) => {
+                                            fc.weather[0].iconUrl =
+                                                this.weatherService.getWeatherIcon(fc.weather[0].id)
+                                        });
+                                        this.locationService.update({
+                                            zip: zipcode,
+                                            forecast,
+                                            data: conditionsCopy
+                                        })
+                                    })
+                                );
                             }),
                         )));
                     this.timers.push({zipcode, timer: thisTimer.subscribe()});
@@ -56,7 +68,6 @@ export class AppComponent implements OnDestroy {
         this.subscriptions.add(
             this.locationRemoved.pipe(
                 map((zipcode) => {
-                    this.weatherService.removeCurrentConditions(zipcode);
                     StorageService.deleteZipcodeFromList(zipcode);
                     StorageService.recalculateActiveItem(zipcode);
                     StorageService.deleteRefreshIntervalForZipcode(zipcode);
@@ -108,14 +119,20 @@ export class AppComponent implements OnDestroy {
     }
 
     private getDataForZipcode(zipcode: string): void {
-        this.weatherService.addCurrentConditionsHttp(zipcode).pipe(
+        this.weatherService.getCurrentConditions(zipcode).pipe(
             concatMap((conditions: CurrentConditions) => this.weatherService.getForecastHttp(zipcode).pipe(
                 map((forecast) => {
+                    forecast.list.forEach((fc) => {
+                        fc.weather[0].iconUrl =
+                            this.weatherService.getWeatherIcon(fc.weather[0].id);
+                    })
                     const newLocationData = {
                         zip: zipcode,
                         data: conditions,
                         forecast
                     };
+                    newLocationData.data.weather[0].iconUrl =
+                        this.weatherService.getWeatherIcon(newLocationData.data.weather[0].id);
                     this.locationService.addLocation(newLocationData);
                 })
             ))

@@ -1,11 +1,10 @@
-import {Injectable, Signal, signal} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {EMPTY, Observable, ReplaySubject} from 'rxjs';
 
 import {HttpClient} from '@angular/common/http';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
-import {ConditionsAndZip} from './conditions-and-zip.type';
 import {Forecast} from './forecasts-list/forecast.type';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError} from 'rxjs/operators';
 import {StorageService} from './storage.service';
 
 @Injectable()
@@ -14,13 +13,12 @@ export class WeatherService {
   static URL = 'https://api.openweathermap.org/data/2.5';
   static APPID = '5a4b2d457ecbef9eb2a71e480b947604';
   static ICON_URL = 'https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-hdpi/';
-  private currentConditions = signal<ConditionsAndZip[]>([]);
   private getCurrentConditionsForZipcodeFailed$: ReplaySubject<string> = new ReplaySubject<string>();
 
   constructor(private http: HttpClient) {
   }
 
-    public addCurrentConditionsHttp(zipcode: string): Observable<CurrentConditions> {
+    public getCurrentConditions(zipcode: string): Observable<CurrentConditions> {
         if (!zipcode) {
             return;
         }
@@ -35,51 +33,10 @@ export class WeatherService {
         );
     }
 
-    addCurrentConditions(zipcode: string, data: CurrentConditions): void {
-        if (!zipcode.trim()) {
-            return;
-        }
-        this.currentConditions.update(conditions => {
-            const conditionsCopy = [...conditions];
-            const exists = conditionsCopy.find((cond) => cond.zip === zipcode);
-            if (exists) {
-                exists.data = data;
-                return conditionsCopy;
-            }
-            return [...conditionsCopy, {zip: zipcode, data}];
-        })
-    }
-
-    removeCurrentConditions(zipcode: string) {
-      if (!zipcode) {
-          return;
-      }
-        this.currentConditions.update(conditions => {
-            const conditionsCopy = [...conditions];
-            for (const i in conditionsCopy) {
-                if (conditionsCopy[i].zip === zipcode) {
-                    conditionsCopy.splice(+i, 1);
-                }
-            }
-            return [...conditionsCopy];
-        })
-    }
-
     getForecastHttp(zipcode: string): Observable<Forecast> {
         // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
         return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
     }
-
-  getForecast(zipcode: string): Observable<Forecast> {
-    // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
-      return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`).pipe(
-          tap((forecast) => this.currentConditions.update(conditions => {
-              const conditionsCopy = [...conditions];
-              conditionsCopy.find((cond) => cond.zip === zipcode).forecast = forecast;
-              return [...conditionsCopy];
-          }) )
-      );
-  }
 
   getWeatherIcon(id): string {
     if (id >= 200 && id <= 232) {
