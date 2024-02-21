@@ -6,6 +6,8 @@ import {toObservable} from '@angular/core/rxjs-interop';
 import {tap} from 'rxjs/operators';
 import {SharedService} from '../shared.service';
 import {LocationService} from '../location.service';
+import {TabsComponent} from '../tabs/tabs.component';
+import {HelloWorldComponent} from '../hello-world/hello-world.component';
 
 @Component({
   selector: 'app-main-page',
@@ -13,11 +15,14 @@ import {LocationService} from '../location.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainPageComponent implements OnDestroy {
+  Tabs = TabsComponent;
+  Hello = HelloWorldComponent;
   protected locationService = inject(LocationService);
   protected shared = inject(SharedService);
   private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.locationService.getCurrentLocations();
   protected currentConditionsByZipObs: Observable<ConditionsAndZip[]> = toObservable(this.currentConditionsByZip);
   private subscriptions: Subscription = new Subscription();
+
 
   constructor(private cd: ChangeDetectorRef) {
     this.subscriptions.add(
@@ -49,5 +54,9 @@ export class MainPageComponent implements OnDestroy {
 
   public removeTab(zipcode) {
     this.locationService.removeLocation(zipcode);
+  }
+
+  public getCurrentConditionsByZip(): Signal<ConditionsAndZip[]> {
+    return this.currentConditionsByZip;
   }
 }

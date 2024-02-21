@@ -1,6 +1,8 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
 import {StorageService} from '../storage.service';
+import {Subject} from 'rxjs';
+import {TabsService} from '../tabs.service';
 
 @Component({
   selector: 'app-tabs',
@@ -9,10 +11,6 @@ import {StorageService} from '../storage.service';
 })
 export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   private _items: TabsOptions[];
-
-  @Output()
-  removeTabClicked: EventEmitter<string> = new EventEmitter();
-
 
   @Input() set items(data: Type[]) {
     if (data) {
@@ -23,12 +21,12 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
     return this._items;
   }
 
-  constructor() {
+  constructor(private service: TabsService) {
     this.initActiveState();
   }
 
   removeTab(item: Type): void {
-    this.removeTabClicked.emit(item.zip);
+    this.service.triggerRemoveItem(item);
     this.initActiveState();
   }
 

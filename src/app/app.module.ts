@@ -20,6 +20,8 @@ import {TabComponent} from './tab/tab.component';
 import {TabPanelComponent} from './tab-panel/tab-panel.component';
 import {StorageService} from './storage.service';
 import {SharedService} from './shared.service';
+import {TabsService} from './tabs.service';
+import {HelloWorldComponent} from './hello-world/hello-world.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,7 @@ import {SharedService} from './shared.service';
       TabsComponent,
       TabComponent,
       TabPanelComponent,
+      HelloWorldComponent,
   ],
     imports: [
         BrowserModule,
@@ -42,7 +45,7 @@ import {SharedService} from './shared.service';
         ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
         ReactiveFormsModule,
     ],
-  providers: [LocationService, WeatherService, StorageService, SharedService],
+  providers: [LocationService, WeatherService, StorageService, SharedService, TabsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
