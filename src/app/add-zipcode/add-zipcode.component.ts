@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {LocationService} from '../location.service';
-import {WeatherService} from '../weather.service';
 import {StorageService} from '../storage.service';
 
 @Component({
@@ -27,7 +26,8 @@ export class AddZipcodeComponent {
       StorageService.setActiveItem(zipcode);
       StorageService.addZipcodeToLocations(zipcode);
 
-      this.service.addLocation(zipcode);
+      this.service.prefetch(zipcode);
+
     } else {
       this.message = `"${zipcode}" is invalid.`;
       setTimeout(() => this.message = '', 2000);

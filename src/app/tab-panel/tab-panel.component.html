@@ -14,8 +14,8 @@
             </p>
             <p>This weather card and its 5-day forecast are updated every <span class="highlight-container"><span class="highlight">{{ getZipcodeRefreshInterval(item.zip).name }}</span></span></p>
         </div>
-        <div>
-            <img [src]="weatherService.getWeatherIcon(item.data.weather[0].id)" alt="weather image">
+        <div *ngIf="item.data.weather[0].iconUrl">
+            <img [src]="item.data.weather[0].iconUrl" alt="item image">
         </div>
     </div>
 </div>

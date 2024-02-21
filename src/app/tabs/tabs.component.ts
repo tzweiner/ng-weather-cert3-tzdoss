@@ -1,5 +1,4 @@
-import {Component, inject, Input, OnChanges} from '@angular/core';
-import {LocationService} from '../location.service';
+import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
 import {StorageService} from '../storage.service';
 
@@ -9,8 +8,11 @@ import {StorageService} from '../storage.service';
   styleUrl: './tabs.component.css',
 })
 export class TabsComponent<Type extends TabsOptions> implements OnChanges {
-  protected locationService = inject(LocationService);
   private _items: TabsOptions[];
+
+  @Output()
+  removeTabClicked: EventEmitter<string> = new EventEmitter();
+
 
   @Input() set items(data: Type[]) {
     if (data) {
@@ -26,7 +28,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   }
 
   removeTab(item: Type): void {
-    this.locationService.removeLocation(item.zip);
+    this.removeTabClicked.emit(item.zip);
     this.initActiveState();
   }
 

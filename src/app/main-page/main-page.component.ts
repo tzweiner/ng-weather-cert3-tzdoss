@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, Signal} from '@angular/core';
-import {WeatherService} from '../weather.service';
 import {ConditionsAndZip} from '../conditions-and-zip.type';
 import {Observable, Subscription} from 'rxjs';
 import {StorageService} from '../storage.service';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {tap} from 'rxjs/operators';
 import {SharedService} from '../shared.service';
+import {LocationService} from '../location.service';
 
 @Component({
   selector: 'app-main-page',
@@ -13,9 +13,9 @@ import {SharedService} from '../shared.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainPageComponent implements OnDestroy {
-  protected weatherService = inject(WeatherService);
+  protected locationService = inject(LocationService);
   protected shared = inject(SharedService);
-  private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
+  private currentConditionsByZip: Signal<ConditionsAndZip[]> = this.locationService.getCurrentLocations();
   protected currentConditionsByZipObs: Observable<ConditionsAndZip[]> = toObservable(this.currentConditionsByZip);
   private subscriptions: Subscription = new Subscription();
 
@@ -45,5 +45,9 @@ export class MainPageComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public removeTab(zipcode) {
+    this.locationService.removeLocation(zipcode);
   }
 }
