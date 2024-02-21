@@ -5,7 +5,7 @@ import {WeatherService} from './weather.service';
 import {StorageService} from './storage.service';
 import {concatMap, delay, map, mergeMap, tap} from 'rxjs/operators';
 import {CurrentConditions} from './current-conditions/current-conditions.type';
-import {Forecast, List} from './forecasts-list/forecast.type';
+import {List} from './forecasts-list/forecast.type';
 
 export interface TimerForZipcode {
     zipcode: string;
@@ -31,7 +31,6 @@ export class AppComponent implements OnDestroy {
 
         this.subscriptions.add(
             this.locationPrefetch.pipe(
-                tap((data) => console.log('will be fetching data for ', data)),
                 tap((zipcode) => this.getDataForZipcode(zipcode)),
             ).subscribe()
         );

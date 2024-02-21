@@ -43,6 +43,7 @@ export class LocationService {
     let index = this.locations.findIndex((location) => location.zip === zipcode);
     if (index !== -1) {
       this.locations.splice(index, 1);
+      this.locationRemovedSubj$.next(zipcode);
       this.currentLocations.update(conditions => {
         const conditionsCopy = [...conditions];
         for (const i in conditionsCopy) {

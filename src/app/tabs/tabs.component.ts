@@ -11,7 +11,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   private _items: TabsOptions[];
 
   @Output()
-  onRemove: EventEmitter<string> = new EventEmitter();
+  removeTabClicked: EventEmitter<string> = new EventEmitter();
 
 
   @Input() set items(data: Type[]) {
@@ -28,7 +28,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
   }
 
   removeTab(item: Type): void {
-    this.onRemove.emit(item.zip);
+    this.removeTabClicked.emit(item.zip);
     this.initActiveState();
   }
 
