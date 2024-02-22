@@ -4,6 +4,6 @@
         <app-current-conditions [items]="currentConditionsByZipObs | async"></app-current-conditions>
     </div>
     <ng-template #tabsDisplay>
-        <app-tabs [items]="currentConditionsByZipObs | async" (removeTabClicked)="removeTab($event)"></app-tabs>
+        <ng-container *ngComponentOutlet="Tabs; inputs: { items: getCurrentConditionsByZip()() };" />
     </ng-template>
 </div>

@@ -1,7 +1,9 @@
-import {Injectable, Signal, signal} from '@angular/core';
+import {inject, Injectable, Signal, signal} from '@angular/core';
 import {ReplaySubject, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
 import {ConditionsAndZip} from './conditions-and-zip.type';
+import {TabsService} from './tabs.service';
+import {TabsOptions} from './tabs-options.model';
 
 @Injectable()
 export class LocationService {
@@ -10,8 +12,14 @@ export class LocationService {
   private locationPrefetch$: Subject<string> = new Subject<string>();
   private locationAddedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
   private locationRemovedSubj$: ReplaySubject<string> = new ReplaySubject<string>();
+  private tabsService = inject(TabsService);
+  private removeTab: Subject<TabsOptions> = this.tabsService.getRemoveItem();
 
-  constructor() { }
+  constructor() {
+    this.removeTab.subscribe((data) => {
+      this.removeLocation(data.zip);
+    })
+  }
 
   prefetch(zipcode: string) {
     this.locationPrefetch$.next(zipcode);

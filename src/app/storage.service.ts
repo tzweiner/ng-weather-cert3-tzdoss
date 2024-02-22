@@ -94,7 +94,7 @@ export class StorageService {
 
     public static initRefreshIntervalForZipcode(zipcode: string): void {
         localStorage.setItem(`_${zipcode}_refreshInterval`,
-            JSON.stringify(StorageService.getRefreshInterval().value) );
+            JSON.stringify(StorageService.getRefreshInterval()) );
     }
 
     public static initRefreshInterval(): RefreshInterval {

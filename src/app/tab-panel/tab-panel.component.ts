@@ -1,10 +1,9 @@
-import {Component, inject, Input} from '@angular/core';
+import {Component, inject, Input, TemplateRef} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
 import {Router} from '@angular/router';
 import {RefreshInterval} from '../refresh-interval.model';
 import {StorageService} from '../storage.service';
 
-type State = 'active' | 'default';
 
 @Component({
   selector: 'app-tab-panel',
@@ -14,7 +13,9 @@ type State = 'active' | 'default';
 export class TabPanelComponent<Type extends TabsOptions> {
   private router = inject(Router);
   private _item: Type;
-  public state: State = 'default';
+
+  @Input()
+  panelTemplate?: TemplateRef<any>;
 
   @Input() set item(data: Type) {
     if (data) {
@@ -28,10 +29,6 @@ export class TabPanelComponent<Type extends TabsOptions> {
 
   showForecast(zipcode: string) {
     this.router.navigate(['/forecast', zipcode])
-  }
-
-  public getZipcodeRefreshInterval(zipcode: string): RefreshInterval {
-    return StorageService.getRefreshIntervalForZipCode(zipcode);
   }
 
 }
