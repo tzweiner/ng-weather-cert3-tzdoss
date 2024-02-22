@@ -1,8 +1,10 @@
-import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, TemplateRef} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
 import {StorageService} from '../storage.service';
 import {Subject} from 'rxjs';
 import {TabsService} from '../tabs.service';
+import {Router} from '@angular/router';
+import {RefreshInterval} from '../refresh-interval.model';
 
 @Component({
   selector: 'app-tabs',
@@ -21,7 +23,7 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
     return this._items;
   }
 
-  constructor(private service: TabsService) {
+  constructor(private service: TabsService, private router: Router) {
     this.initActiveState();
   }
 
@@ -59,8 +61,12 @@ export class TabsComponent<Type extends TabsOptions> implements OnChanges {
     }
   }
 
-  public getTemplate(): string {
-    return StorageService.getTabTemplate();
+  showDetail(zipcode: string) {
+    this.router.navigate(['/forecast', zipcode])
+  }
+
+  public getZipcodeRefreshInterval(zipcode): RefreshInterval {
+    return StorageService.getRefreshIntervalForZipCode(zipcode);
   }
 
   ngOnChanges(): void {

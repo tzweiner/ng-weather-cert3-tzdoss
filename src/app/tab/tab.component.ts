@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, inject, Input} from '@angular/core';
+import {ChangeDetectorRef, Component, inject, Input, TemplateRef} from '@angular/core';
 import {TabsOptions} from '../tabs-options.model';
 import {Subscription} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -13,7 +13,8 @@ export class TabComponent<Type extends TabsOptions> {
   private _item: Type;
   private subscriptions: Subscription = new Subscription();
   protected shared = inject(SharedService);
-
+  @Input()
+  optionTemplate?: TemplateRef<any>;
 
   @Input() set item(data: Type) {
     if (data) {

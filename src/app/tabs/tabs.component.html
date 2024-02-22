@@ -1,24 +1,48 @@
-<!-- Tabs implemented with content injection -->
+<!-- Tabs -->
 <div *ngFor="let item of items">
-    <app-tab [item]="item">
-        <div class="tab" default (click)="activateTab(item)" [ngClass]="{ 'active': item.active}" *ngIf="getTemplate() === 'default'">
+    <ng-template #weatherTabTemplate let-item>
+        <div class="tab" (click)="activateTab(item)" [ngClass]="{ 'active': item.active}">
             {{item.data.name}} ({{item.zip}})
             <span class="close" (click)="removeTab(item)">&times;</span>
         </div>
-        <div class="tab fun" fun (click)="activateTab(item)" [ngClass]="{ 'active': item.active}" *ngIf="getTemplate() === 'fun'">
-            {{item.data.name}} ({{item.zip}})
-            <span class="close" (click)="removeTab(item)">&times;</span>
-        </div>
-        <button class="tab button" button (click)="activateTab(item)" [ngClass]="{ 'active': item.active}" *ngIf="getTemplate() === 'button'">
-            {{item.data.name}} ({{item.zip}})
-            <span class="close" (click)="removeTab(item)">&times;</span>
-        </button>
-    </app-tab>
+    </ng-template>
+
+    <!-- DEFINE OTHER TEMPLATES HERE TO PASS INTO app-tab -->
+
+    <app-tab [item]="item" [optionTemplate]="weatherTabTemplate"></app-tab>
 </div>
+
 <!-- Tabs Panels -->
 <div>
     <ng-container *ngFor="let item of items" >
-        <app-tab-panel [item]="item" class="tabsPanel" [ngClass]="{ 'active': item.active}"></app-tab-panel>
+        <ng-template #weatherTabPanelTemplate let-item>
+            <div [ngClass]="{ 'active': item.active }">
+                <div class="flex well" (click)="showDetail(item.zip)">
+                    <div>
+                        <h3>{{item.data.name}} ({{item.zip}})</h3>
+                        <h4>Current conditions: {{item.data.weather[0].main}}</h4>
+                        <h4>Temperatures today:</h4>
+                        <p>
+                            Current {{item.data.main.temp | number:'.0-0'}}
+                            - Max {{item.data.main.temp_max | number:'.0-0'}}
+                            - Min {{item.data.main.temp_min | number:'.0-0'}}
+                        </p>
+                        <p>
+                            <a [routerLink]="['/forecast', item.zip]" >Show 5-day forecast for {{item.data.name}}</a>
+                        </p>
+                        <p>This weather card and its 5-day forecast are updated every <span class="highlight-container"><span class="highlight">{{ getZipcodeRefreshInterval(item.zip).name }}</span></span></p>
+                    </div>
+                    <div *ngIf="item.data.weather[0].iconUrl">
+                        <img [src]="item.data.weather[0].iconUrl" alt="item image">
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+
+        <!-- DEFINE OTHER TEMPLATES HERE TO PASS INTO app-tab-panel -->
+
+        <app-tab-panel [item]="item" [panelTemplate]="weatherTabPanelTemplate"
+                       class="tabsPanel" [ngClass]="{ 'active': item.active}"></app-tab-panel>
     </ng-container>
 </div>
 
